@@ -1,0 +1,123 @@
+/* 墨绿台球 - CueMatch Velocity 全局主题变量 */
+page {
+  /* 品牌色彩 */
+  --brand-green: #10B981;
+  --brand-green-dark: #006c49;
+  --brand-green-deeper: #064E3B;
+  --brand-green-hover: #059669;
+  --brand-green-active: #059b4c;
+  --wechat-green: #07C160;
+  --wechat-green-hover: #06ad56;
+  --wechat-green-active: #059b4c;
+
+  /* 浅绿底色 */
+  --mint-bg: #ECFDF5;
+  --mint-bg-alt: #E8F8F0;
+
+  /* 页面画布底色 */
+  --page-bg: #F8FAFC;
+  --page-bg-alt: #FAF8FF;
+  --card-bg: #FFFFFF;
+
+  /* 文字与分割线 */
+  --text-primary: #0F172A;
+  --text-primary-alt: #131b2e;
+  --text-secondary: #334155;
+  --text-secondary-alt: #3C4A42;
+  --text-hint: #64748B;
+  --text-hint-alt: #6C7A71;
+  --border-color: #E2E8F0;
+
+  /* 尺寸变量 */
+  --card-radius: 32rpx;
+  --control-radius: 24rpx;
+  --pill-radius: 9999rpx;
+
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background-color: var(--page-bg);
+  color: var(--text-primary);
+  font-size: 28rpx;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 通用工具类 */
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 动画 */
+@keyframes pulse-ring {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  80%, 100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes bounce-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8rpx); }
+}
+
+@keyframes pin-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14rpx); }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-down {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(100%); opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.pulse-effect {
+  animation: pulse-ring 2.2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+.bounce-pin {
+  animation: bounce-gentle 2.2s ease-in-out infinite;
+}
+
+.animate-pin-bounce {
+  animation: pin-bounce 2.4s ease-in-out infinite;
+}

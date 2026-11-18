@@ -1,0 +1,116 @@
+<!--pages/location-picker/index.wxml 选择位置页面-->
+<view class="picker-container">
+
+  <!-- ==================== 上半部分：地图区域 ==================== -->
+  <view class="map-section">
+    <!-- 原生地图 -->
+    <map
+      id="pickerMap"
+      class="picker-map"
+      longitude="{{mapLng}}"
+      latitude="{{mapLat}}"
+      scale="{{mapScale}}"
+      show-location="{{true}}"
+      markers="{{mapMarkers}}"
+      bindregionchange="onRegionChange"
+    ></map>
+
+    <!-- 顶部搜索框 -->
+    <view class="search-bar">
+      <view class="search-input-wrap">
+        <text class="search-icon">🔍</text>
+        <input
+          class="search-input"
+          placeholder="搜索小区 / 写字楼 / 球房 / 地标"
+          value="{{searchKeyword}}"
+          bindinput="onSearchInput"
+          confirm-type="search"
+          bindconfirm="onSearchConfirm"
+        />
+        <text class="search-clear {{searchKeyword ? 'show' : ''}}" bindtap="onClearSearch">✕</text>
+      </view>
+    </view>
+
+    <!-- 地图中心选点大头针 -->
+    <view class="center-pin">
+      <view class="pin-label">
+        <view class="pin-dot"></view>
+        <text class="pin-text text-ellipsis">{{selectedPoiName}}</text>
+      </view>
+      <view class="pin-icon-wrap animate-pin-bounce">
+        <view class="pin-icon">🎱</view>
+      </view>
+      <view class="pin-shadow"></view>
+    </view>
+
+    <!-- 地图右下角控制按钮 -->
+    <view class="map-controls">
+      <view class="control-btn" bindtap="onResetLocation">
+        <text class="control-icon">◎</text>
+      </view>
+      <view class="control-group">
+        <view class="control-btn-zoom" bindtap="onZoomIn">
+          <text>＋</text>
+        </view>
+        <view class="control-divider"></view>
+        <view class="control-btn-zoom" bindtap="onZoomOut">
+          <text>－</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 下半部分：POI 列表 ==================== -->
+  <view class="poi-section">
+    <view class="poi-handle"></view>
+
+    <scroll-view class="poi-list" scroll-y>
+      <!-- 加载状态 -->
+      <view class="poi-loading" wx:if="{{isSearching || isReverseGeocoding}}">
+        <text class="loading-text">正在搜索附近地点...</text>
+      </view>
+
+      <view
+        class="poi-item {{item.id === selectedPoiId ? 'poi-selected' : ''}}"
+        wx:for="{{poiList}}"
+        wx:key="id"
+        bindtap="onSelectPoi"
+        data-id="{{item.id}}"
+      >
+        <view class="poi-left">
+          <view class="poi-icon-wrap {{item.id === selectedPoiId ? 'poi-icon-selected' : ''}}">
+            <text class="poi-icon">📍</text>
+          </view>
+          <view class="poi-detail">
+            <view class="poi-name-row">
+              <text class="poi-name {{item.id === selectedPoiId ? 'poi-name-bold' : ''}}">{{item.name}}</text>
+              <text class="poi-tag" wx:if="{{item.tag}}">{{item.tag}}</text>
+            </view>
+            <text class="poi-address">{{item.address}}</text>
+          </view>
+        </view>
+        <view class="poi-check" wx:if="{{item.id === selectedPoiId}}">
+          <view class="check-circle">
+            <text class="check-icon">✓</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="poi-empty" wx:if="{{poiList.length === 0 && !isSearching && !isReverseGeocoding}}">
+        <text class="empty-icon">📍</text>
+        <text class="empty-text">{{searchKeyword ? '未找到与"' + searchKeyword + '"相关的地点' : '附近暂无地点信息'}}</text>
+        <text class="empty-link" bindtap="onClearSearch">查看附近全部地点</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ==================== 底部确认按钮 ==================== -->
+  <view class="confirm-bar safe-bottom">
+    <view class="confirm-btn" bindtap="onConfirmLocation">
+      <text class="confirm-icon">✓</text>
+      <text class="confirm-text">确认选择此地点</text>
+    </view>
+  </view>
+
+</view>

@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html class="h-full" lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
+  <title>附近球友 - 找球友</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: '#07C160',
+              dark: '#06ad56',
+              active: '#059b4c',
+              light: '#E8F8F0',
+              forest: '#006c49',
+              emerald: '#10b981'
+            },
+            wechat: {
+              DEFAULT: '#07C160',
+              hover: '#06ad56',
+              active: '#059b4c'
+            },
+            surface: {
+              DEFAULT: '#faf8ff',
+              lowest: '#ffffff',
+              container: '#eaedff'
+            },
+            'on-surface': {
+              DEFAULT: '#131b2e',
+              variant: '#3c4a42'
+            },
+            'inverse-surface': '#283044',
+            'inverse-on-surface': '#eef0ff',
+            outline: {
+              DEFAULT: '#6c7a71',
+              variant: '#bbcabf'
+            },
+            'primary-container': '#10b981'
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', '"PingFang SC"', '"Hiragino Sans GB"', '"Microsoft YaHei"', 'sans-serif']
+          },
+          boxShadow: {
+            'xs': '0 1px 2px 0 rgba(15, 23, 42, 0.05)',
+            'card': '0 8px 30px rgba(0, 0, 0, 0.08)',
+            'pin': '0 4px 14px rgba(0, 0, 0, 0.15)'
+          },
+          backdropBlur: {
+            'xs': '2px'
+          },
+          borderRadius: {
+            '2xs': '2px'
+          },
+          scale: {
+            '98': '0.98'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      80%, 100% { transform: scale(2.2); opacity: 0; }
+    }
+    .pulse-effect { animation: pulse-ring 2.2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+
+    @keyframes bounce-gentle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .bounce-pin { animation: bounce-gentle 2.2s ease-in-out infinite; }
+
+    @keyframes pinBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+    .animate-pin-bounce { animation: pinBounce 2.4s ease-in-out infinite; }
+
+    /* 位置选择器矢量地图样式 */
+    .map-road-main { stroke: #ffffff; stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; }
+    .map-road-sub { stroke: #f8fafc; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+    .map-road-casing { stroke: #e2e8f0; stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
+    .map-river { fill: none; stroke: #cbf0f8; stroke-width: 22; stroke-linecap: round; stroke-linejoin: round; }
+    .map-park { fill: #dcfce7; }
+    .map-building { fill: #eef2f6; }
+  </style>
+</head>
+<body class="bg-slate-100 flex justify-center items-center min-h-screen text-slate-800 antialiased p-0 sm:p-4 overflow-hidden">
+  <!-- 主移动端容器 -->
+  <div class="relative w-full max-w-[420px] h-[100dvh] max-h-[920px] bg-white overflow-hidden sm:rounded-[44px] shadow-2xl flex flex-col border border-slate-200/80">
+
+    <!-- ==================== 顶部 Header ==================== -->
+    <header class="relative z-30 pt-3 px-4 pb-2 bg-white/95 backdrop-blur-md border-b border-slate-100 shrink-0">
+      <div class="flex justify-between items-center text-xs font-semibold text-slate-900 mb-1.5 px-1 tracking-tight">
+        <span>09:41</span>
+        <div class="flex items-center space-x-1.5 text-slate-800">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z"></path></svg>
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0012 4z"></path></svg>
+          <div class="w-5 h-2.5 border border-slate-700 rounded-sm p-0.5 flex items-center">
+            <div class="h-full w-full bg-slate-800 rounded-2xs"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between mt-1">
+        <!-- 左上角位置入口：点击打开“地图选择新位置” -->
+        <button aria-label="选择位置" class="flex items-center space-x-1 px-2.5 py-1 bg-slate-100/90 hover:bg-slate-200 active:scale-95 text-slate-800 rounded-full border border-slate-200 transition-all text-xs font-semibold cursor-pointer max-w-[138px] shrink-0" id="header-location-btn" onclick="openLocationPicker()" type="button">
+          <svg class="w-3 h-3 text-[#07C160] shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"></path></svg>
+          <span class="truncate font-medium text-[11px] text-slate-800" id="header-location-text">裕民路南苑六村</span>
+          <svg class="w-2.5 h-2.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+        </button>
+
+        <h1 class="text-base font-bold text-slate-900 tracking-wide">附近球友</h1>
+
+        <div class="flex items-center h-8 px-2.5 bg-slate-100/80 rounded-full border border-slate-200 space-x-2 shrink-0">
+          <button aria-label="更多" class="text-slate-700 hover:text-slate-900" onclick="showAppToast('微信小程序菜单')" type="button">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg>
+          </button>
+          <div class="w-px h-3.5 bg-slate-300"></div>
+          <button aria-label="小程序胶囊" class="text-slate-700 hover:text-slate-900" onclick="showAppToast('找球友 · 墨绿台球')" type="button">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" stroke-width="2"></circle><circle cx="12" cy="12" fill="currentColor" r="2.5"></circle></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== 模式切换与个人信息入口 ==================== -->
+    <div class="relative z-20 px-4 py-2 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between shrink-0 shadow-xs">
+      <div class="relative flex items-center p-1 bg-slate-100 rounded-full border border-slate-200 w-[210px]">
+        <div class="absolute inset-y-1 w-[calc(50%-4px)] bg-white rounded-full shadow-sm transition-transform duration-300 ease-out" id="tab-pill" style="transform: translateX(0px);"></div>
+        <button class="relative z-10 w-1/2 py-1 text-xs font-bold text-[#07C160] transition-colors flex items-center justify-center space-x-1 cursor-pointer" id="tab-btn-map" onclick="switchTab('map')" type="button">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          <span>地图模式</span>
+        </button>
+        <button class="relative z-10 w-1/2 py-1 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors flex items-center justify-center space-x-1 cursor-pointer" id="tab-btn-list" onclick="switchTab('list')" type="button">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          <span>列表模式</span>
+        </button>
+      </div>
+
+      <!-- 顶部右上角个人资料入口按钮 -->
+      <button aria-label="个人资料" class="relative w-8 h-8 rounded-full p-0 bg-white border border-slate-200 shadow-xs flex items-center justify-center text-slate-700 hover:border-[#07C160] active:scale-95 transition-all cursor-pointer ring-2 ring-slate-100 group shrink-0" id="header-profile-btn" onclick="openProfileDrawer()" type="button">
+        <div class="w-full h-full rounded-full bg-slate-100 flex items-center justify-center text-slate-400 overflow-hidden" id="nav-avatar-container">
+          <svg class="w-4 h-4 text-slate-400" fill="currentColor" id="nav-avatar-icon" viewBox="0 0 24 24">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+          </svg>
+        </div>
+        <span class="absolute top-0 right-0 w-2 h-2 bg-slate-300 rounded-full border-2 border-white transition-colors" id="nav-avatar-dot"></span>
+      </button>
+    </div>
+
+    <!-- ==================== 定位提示条 ==================== -->
+    <div class="relative z-20 w-full px-4 bg-amber-50 flex items-center justify-between transition-all duration-300 ease-out shrink-0 py-2 min-h-[36px]" id="location-banner">
+      <div class="flex items-center space-x-2 min-w-0 flex-1">
+        <svg class="w-3.5 h-3.5 text-amber-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path clip-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" fill-rule="evenodd"></path></svg>
+        <p class="text-[11px] font-medium text-amber-800 truncate">开启定位，发现身边球房的球友</p>
+      </div>
+      <div class="flex items-center space-x-2 shrink-0 ml-2">
+        <button class="text-[11px] font-bold text-amber-700 hover:text-amber-800 flex items-center space-x-0.5 cursor-pointer active:scale-95 transition-transform" onclick="handleEnableLocation()" type="button">
+          <span>去开启</span>
+          <svg class="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+        </button>
+        <div class="w-px h-2.5 bg-amber-200"></div>
+        <button aria-label="关闭提示" class="text-amber-700/60 hover:text-amber-800 active:scale-95 text-xs font-bold cursor-pointer p-0.5" onclick="dismissLocationBanner()" type="button">✕</button>
+      </div>
+    </div>
+
+    <!-- ==================== 视图1：地图模式 ==================== -->
+    <main class="relative flex-1 bg-[#EEF2F6] overflow-hidden select-none" id="view-map" onclick="handleMapBackgroundClick(event)">
+      <svg class="absolute inset-0 w-full h-full object-cover pointer-events-none" preserveAspectRatio="none" viewBox="0 0 420 620" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern height="40" id="grid-pattern" patternUnits="userSpaceOnUse" width="40">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#E2E8F0" stroke-dasharray="2 2" stroke-width="0.75"></path>
+          </pattern>
+        </defs>
+        <rect fill="#F1F5F9" height="100%" width="100%"></rect>
+        <rect fill="url(#grid-pattern)" height="100%" width="100%"></rect>
+        <path d="M 230 40 Q 280 20, 360 30 T 420 80 L 420 0 L 220 0 Z" fill="#DCFCE7" opacity="0.9"></path>
+        <path d="M 260 270 C 310 260, 370 290, 410 330 C 400 390, 340 400, 290 380 C 250 360, 240 300, 260 270 Z" fill="#DCFCE7" opacity="0.85"></path>
+        <path d="M 110 470 C 160 460, 220 480, 250 520 C 210 560, 140 550, 100 520 Z" fill="#D1FAE5" opacity="0.9"></path>
+        <path d="M -10 160 Q 60 170, 140 100 T 260 50" fill="none" stroke="#BAE6FD" stroke-linecap="round" stroke-width="12"></path>
+        <path d="M 160 230 C 220 200, 240 260, 310 240 T 430 250" fill="none" stroke="#BAE6FD" stroke-linecap="round" stroke-width="10"></path>
+        <ellipse cx="330" cy="330" fill="#93C5FD" opacity="0.7" rx="35" ry="24"></ellipse>
+        <path d="M 0 100 L 420 100 M 0 210 L 420 210 M 0 430 L 420 430" stroke="#FFFFFF" stroke-width="6"></path>
+        <path d="M 70 0 L 70 620 M 210 0 L 210 620 M 350 0 L 350 620" stroke="#FFFFFF" stroke-width="6"></path>
+        <path d="M -20 300 Q 180 340, 440 230" fill="none" stroke="#FDE68A" stroke-linecap="round" stroke-width="8"></path>
+      </svg>
+
+      <!-- 地标 -->
+      <div class="absolute top-[48px] right-[24px] text-[11px] font-bold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-md shadow-xs border border-emerald-200 pointer-events-none flex items-center space-x-1">
+        <span>🌲</span><span>嘉定紫藤园</span>
+      </div>
+      <div class="absolute top-[280px] right-[18px] text-[11px] font-bold text-sky-800 bg-sky-100/90 px-2 py-0.5 rounded-md shadow-xs border border-sky-200 pointer-events-none flex items-center space-x-1">
+        <span>💧</span><span>远香湖公园</span>
+      </div>
+      <div class="absolute top-[370px] left-[20px] text-[11px] font-bold text-slate-700 bg-white/90 px-2 py-0.5 rounded-md shadow-xs border border-slate-200 pointer-events-none flex items-center space-x-1">
+        <span>🏎️</span><span>上海国际赛车场</span>
+      </div>
+
+      <!-- 我在这 Pin -->
+      <div class="absolute top-[130px] left-[52%] -translate-x-1/2 z-10 flex flex-col items-center transition-opacity duration-300" id="user-map-pin">
+        <div class="px-2.5 py-0.5 bg-[#07C160] text-white text-[11px] font-bold rounded-full shadow-md flex items-center space-x-1 mb-1 max-w-[160px]" id="user-pin-badge">
+          <span class="w-1.5 h-1.5 bg-white rounded-full animate-ping shrink-0"></span>
+          <span class="truncate" id="user-pin-label">我在这</span>
+        </div>
+        <div class="relative flex items-center justify-center">
+          <div class="absolute w-14 h-14 bg-[#07C160]/25 rounded-full pulse-effect" id="user-pin-pulse"></div>
+          <div class="relative w-11 h-11 rounded-full border-2 border-white shadow-pin bg-slate-100 p-0.5 overflow-hidden flex items-center justify-center" id="map-my-avatar-container">
+            <svg class="w-5 h-5 text-slate-400" fill="currentColor" id="map-my-avatar-icon" viewBox="0 0 24 24">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+            </svg>
+          </div>
+          <div class="absolute -bottom-1 w-2.5 h-2.5 bg-white transform rotate-45 border-r border-b border-slate-200"></div>
+        </div>
+      </div>
+
+      <!-- 球友 Pins（完整 5 位球友与列表一一对应） -->
+      <div class="map-player-pin absolute top-[230px] right-[75px] z-20 flex flex-col items-center cursor-pointer transition-transform active:scale-95" data-player-id="ajie" onclick="selectPlayer('ajie')">
+        <div class="relative">
+          <div class="w-10 h-10 rounded-full border-2 border-[#07C160] bg-white p-0.5 shadow-pin">
+            <div class="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-slate-900 text-white font-bold text-xs">杰</div>
+          </div>
+          <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] border-2 border-white shadow-xs">🎱</div>
+        </div>
+      </div>
+
+      <div class="map-player-pin absolute top-[105px] left-[55px] z-10 flex flex-col items-center cursor-pointer transition-transform active:scale-95" data-player-id="xiaolin" onclick="selectPlayer('xiaolin')">
+        <div class="relative">
+          <div class="w-8 h-8 rounded-full border-2 border-amber-400 bg-white p-0.5 shadow-sm">
+            <div class="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-emerald-700 text-white font-bold text-[10px]">林</div>
+          </div>
+          <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-slate-900 text-white flex items-center justify-center text-[9px] border border-white">🎱</div>
+        </div>
+      </div>
+
+      <div class="map-player-pin absolute top-[325px] left-[70px] z-10 flex flex-col items-center cursor-pointer transition-transform active:scale-95" data-player-id="fengge" onclick="selectPlayer('fengge')">
+        <div class="relative">
+          <div class="w-8 h-8 rounded-full border-2 border-sky-400 bg-white p-0.5 shadow-sm">
+            <div class="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-blue-900 text-white font-bold text-[10px]">峰</div>
+          </div>
+          <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-slate-900 text-white flex items-center justify-center text-[8px] border border-white">🎱</div>
+        </div>
+      </div>
+
+      <div class="map-player-pin absolute top-[375px] right-[40px] z-10 flex flex-col items-center cursor-pointer transition-transform active:scale-95" data-player-id="chenjiaolian" onclick="selectPlayer('chenjiaolian')">
+        <div class="relative">
+          <div class="w-7 h-7 rounded-full border-2 border-slate-800 bg-white p-0.5 shadow-sm">
+            <div class="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-violet-950 text-white font-bold text-[10px]">陈</div>
+          </div>
+          <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-slate-900 text-white flex items-center justify-center text-[8px] border border-white">🎱</div>
+        </div>
+      </div>
+
+      <div class="map-player-pin absolute top-[275px] left-[165px] z-10 flex flex-col items-center cursor-pointer transition-transform active:scale-95" data-player-id="laozhou" onclick="selectPlayer('laozhou')">
+        <div class="relative">
+          <div class="w-8 h-8 rounded-full border-2 border-amber-600 bg-white p-0.5 shadow-sm">
+            <div class="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-amber-700 text-white font-bold text-[10px]">周</div>
+          </div>
+          <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-slate-900 text-white flex items-center justify-center text-[8px] border border-white">🎱</div>
+        </div>
+      </div>
+
+      <!-- 地图底部球友名片 -->
+      <div class="absolute inset-x-3 z-30 bottom-5 transition-all duration-300 ease-out transform translate-y-full opacity-0 pointer-events-none" id="map-bottom-card">
+        <div class="bg-white/95 backdrop-blur-md rounded-3xl p-3.5 shadow-card border border-slate-100 flex flex-col space-y-3">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="relative shrink-0">
+                <div class="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center bg-slate-900 text-white font-bold text-sm ring-2 ring-[#07C160]/20 shadow-xs shrink-0" id="card-avatar">杰</div>
+                <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-[#07C160] border-2 border-white rounded-full"></span>
+              </div>
+              <div>
+                <div class="flex items-center space-x-2">
+                  <h3 class="text-sm font-bold text-slate-900" id="card-name">阿杰</h3>
+                  <span class="px-2 py-0.5 bg-emerald-100/90 text-emerald-800 text-[10px] font-bold rounded-md border border-emerald-200" id="card-game">中式黑八</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5 flex items-center space-x-1">
+                  <svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  <span id="card-venue-time">嘉定紫藤园球场 · 2小时前活跃</span>
+                </p>
+                <div class="flex items-center mt-1.5 gap-1.5 flex-wrap" id="card-tags">
+                  <span class="px-2 py-0.5 bg-emerald-50 text-emerald-800 text-[10px] font-medium rounded-md border border-emerald-200" id="card-level-tag">☕ 娱乐休闲/欢乐局</span>
+                  <span class="px-2 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-medium rounded-md border border-slate-200" id="card-fee-tag">🤝 台费AA</span>
+                </div>
+              </div>
+            </div>
+            <button aria-label="关闭" class="w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-400 hover:text-slate-600 flex items-center justify-center text-xs font-semibold cursor-pointer transition-all shrink-0 ml-2" onclick="closeMapCard()" type="button">✕</button>
+          </div>
+
+          <!-- 点选打招呼后展示的已发送短语 -->
+          <div class="hidden bg-emerald-50/90 border border-emerald-200 rounded-xl p-2.5 text-xs text-emerald-950 items-start space-x-2 transition-all" id="card-sent-banner">
+            <span class="text-sm shrink-0 leading-none mt-0.5">💬</span>
+            <div class="flex flex-col flex-1">
+              <div class="flex items-center justify-between mb-0.5">
+                <span class="text-[10px] text-amber-600 font-bold">等待对方响应中</span>
+                <span class="text-[10px] text-slate-400" id="card-sent-time">刚刚发送 · 剩余24小时</span>
+              </div>
+              <span class="text-[11px] leading-relaxed text-slate-600 line-clamp-2" id="card-sent-text"></span>
+            </div>
+          </div>
+
+          <!-- 对方已同意横幅 -->
+          <div class="hidden bg-emerald-50/90 border border-emerald-200 rounded-xl p-2.5 items-center justify-between transition-all" id="card-accepted-banner">
+            <div class="flex items-center space-x-2">
+              <div class="w-7 h-7 rounded-lg bg-[#07C160] text-white flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8.5 4C4.36 4 1 6.91 1 10.5c0 2.02 1.05 3.82 2.7 4.98L3 18l3.05-1.52c.76.22 1.58.35 2.45.35.21 0 .42-.01.62-.03A6.2 6.2 0 0 1 9 15c0-3.87 3.81-7 8.5-7 .34 0 .68.02 1.01.06C17.21 5.23 13.24 4 8.5 4zm6.5 5c-3.87 0-7 2.69-7 6s3.13 6 7 6c.72 0 1.41-.1 2.06-.28L20 22l-1.04-2.07C20.17 18.84 21 17.5 21 16c0-3.31-3.13-6-7-6z"></path></svg>
+              </div>
+              <div>
+                <span class="text-[10px] text-emerald-800 font-semibold block leading-none">对方微信号</span>
+                <span class="text-xs font-mono font-bold text-slate-900 mt-0.5 block" id="card-accepted-wx">fengge_billiards</span>
+              </div>
+            </div>
+            <button class="px-3 py-1 bg-[#07C160] hover:bg-[#06ad56] active:bg-[#059b4c] text-white text-[11px] font-bold rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer" id="card-accepted-copy-btn" onclick="copyCardWx()" type="button">一键复制</button>
+          </div>
+
+          <!-- 对方婉拒横幅 -->
+          <div class="hidden bg-slate-50 border border-slate-200/80 rounded-xl p-2.5 items-center justify-between text-xs text-slate-600 transition-all" id="card-declined-banner">
+            <div class="flex items-center space-x-1.5 truncate">
+              <span>🚫</span>
+              <span class="text-[11px] truncate">对方暂不方便约球 · 24小时后可重新打招呼</span>
+            </div>
+          </div>
+
+          <div class="pt-0.5">
+            <button class="w-full py-2.5 px-4 bg-[#07C160] hover:bg-[#06ad56] active:bg-[#059b4c] text-white text-xs font-medium rounded-xl shadow-md flex items-center justify-center gap-1.5 transition-all cursor-pointer" id="card-greet-btn" onclick="handleCardGreet()" type="button">
+              <svg class="w-4 h-4" fill="currentColor" id="card-greet-btn-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"></path><circle cx="8" cy="10" r="1.5"></circle><circle cx="12" cy="10" r="1.5"></circle><circle cx="16" cy="10" r="1.5"></circle></svg>
+              <span id="card-greet-btn-text">打招呼</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ==================== 视图2：列表模式 ==================== -->
+    <section class="hidden flex-1 bg-[#F6F8FA] overflow-y-auto no-scrollbar p-3 space-y-3" id="view-list">
+      <div class="bg-emerald-50/90 border border-emerald-200/80 rounded-2xl p-2.5 px-3 flex items-center justify-between text-xs text-emerald-950 shadow-xs">
+        <div class="flex items-center space-x-1.5 min-w-0">
+          <span class="text-sm shrink-0">💡</span>
+          <p class="text-[11px] text-emerald-800 leading-tight truncate">打招呼发起约局，对方同意后即可互换微信号快速组局</p>
+        </div>
+      </div>
+
+      <!-- 1. 阿杰（默认状态） -->
+      <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-100 flex flex-col space-y-2.5" id="list-card-ajie">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="relative shrink-0">
+              <div class="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center bg-slate-900 text-white font-bold ring-2 ring-[#07C160]/20 shadow-xs shrink-0">杰</div>
+              <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#07C160] border-2 border-white rounded-full"></span>
+            </div>
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <h3 class="text-sm font-bold text-slate-900">阿杰</h3>
+                <span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded border border-emerald-200">中式黑八</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5 flex items-center space-x-1"><span>嘉定紫藤园球场 · 2小时前活跃</span></p>
+            </div>
+          </div>
+          <button class="px-3.5 py-1.5 bg-[#07C160] hover:bg-[#06ad56] active:bg-[#059b4c] text-white shadow-sm transition-all text-xs font-medium rounded-xl cursor-pointer shrink-0" id="list-greet-btn-ajie" onclick="openPhraseSheet('ajie')" type="button">打招呼</button>
+        </div>
+        <div class="flex items-center justify-between py-1 border-t border-slate-100 min-h-[32px]">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="px-2 py-0.5 bg-emerald-50 text-emerald-800 text-[10px] font-medium rounded-md border border-emerald-200">☕ 娱乐休闲/欢乐局</span>
+            <span class="px-2 py-0.5 bg-slate-50 text-slate-600 text-[10px] font-medium rounded-md border border-slate-200">🤝 台费AA</span>
+          </div>
+        </div>
+        <div class="hidden bg-slate-50 border border-slate-200/80 rounded-xl p-2.5 text-xs text-slate-700 items-start space-x-2" id="list-sent-banner-ajie">
+          <span class="text-sm shrink-0 leading-none">💬</span>
+          <div class="flex flex-col flex-1">
+            <div class="flex items-center justify-between mb-0.5">
+              <span class="text-[10px] text-amber-600 font-bold">等待对方响应中</span>
+              <span class="text-[10px] text-slate-400" id="list-sent-time-ajie">刚刚发送 · 剩余24小时</span>
+            </div>
+            <span class="text-[11px] leading-relaxed text-slate-600" id="list-sent-text-ajie"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 小林（等待对方同意） -->
+      <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-100 flex flex-col space-y-2.5" id="list-card-xiaolin">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="relative shrink-0">
+              <div class="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center bg-emerald-700 text-white font-bold ring-2 ring-amber-400/20 shadow-xs shrink-0">林</div>
+              <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#07C160] border-2 border-white rounded-full"></span>
+            </div>
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <h3 class="text-sm font-bold text-slate-900">小林</h3>
+                <span class="px-1.5 py-0.5 bg-amber-50 text-amber-700 text-[10px] font-bold rounded border border-amber-200">中式九球</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5 flex items-center space-x-1"><span>安亭市民体育中心 · 25分钟前活跃</span></p>
+            </div>
+          </div>
+          <button class="px-3 py-1.5 bg-slate-100 text-slate-400 font-medium text-xs rounded-xl shrink-0 cursor-not-allowed" disabled="" id="list-greet-btn-xiaolin" type="button">等待对方同意</button>
+        </div>
+        <div class="flex items-center justify-between py-1 border-t border-slate-100 min-h-[32px]">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="px-2 py-0.5 bg-sky-50 text-sky-700 text-[10px] font-medium rounded-md border border-sky-200">🔥 进阶玩家/有点准度</span>
+            <span class="px-2 py-0.5 bg-slate-50 text-slate-600 text-[10px] font-medium rounded-md border border-slate-200">🤝 台费AA</span>
+          </div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5 text-xs text-slate-700 flex items-start space-x-2" id="list-sent-banner-xiaolin">
+          <span class="text-sm shrink-0 leading-none">💬</span>
+          <div class="flex flex-col flex-1">
+            <div class="flex items-center justify-between mb-0.5">
+              <span class="text-[10px] text-amber-600 font-bold">等待对方响应中</span>
+              <span class="text-[10px] text-slate-400" id="list-sent-time-xiaolin">15分钟前发送 · 剩余23小时</span>
+            </div>
+            <span class="text-[11px] leading-relaxed text-slate-600" id="list-sent-text-xiaolin">Hello，我看你在附近，方便一起拼个台打几局吗？</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. 峰哥（对方同意互换微信） -->
+      <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-100 flex flex-col space-y-2.5" id="list-card-fengge">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="relative shrink-0">
+              <div class="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center bg-blue-900 text-white font-bold ring-2 ring-sky-400/20 shadow-xs shrink-0">峰</div>
+              <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#07C160] border-2 border-white rounded-full"></span>
+            </div>
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <h3 class="text-sm font-bold text-slate-900">峰哥</h3>
+                <span class="px-1.5 py-0.5 bg-sky-50 text-sky-700 text-[10px] font-bold rounded border border-sky-200">美式九球</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5 flex items-center space-x-1"><span>远香湖球会 · 10分钟前活跃</span></p>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 bg-emerald-100/90 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-200 flex items-center space-x-1 shrink-0" id="list-greet-btn-fengge">
+            <span>✓</span><span>对方已同意</span>
+          </span>
+        </div>
+        <div class="flex items-center justify-between py-1 border-t border-slate-100 min-h-[32px]">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="px-2 py-0.5 bg-sky-50 text-sky-700 text-[10px] font-medium rounded-md border border-sky-200">🔥 进阶玩家/有点准度</span>
+            <span class="px-2 py-0.5 bg-slate-50 text-slate-600 text-[10px] font-medium rounded-md border border-slate-200">🤝 台费AA</span>
+          </div>
+        </div>
+        <div class="bg-emerald-50/90 border border-emerald-200 rounded-xl p-2.5 flex items-center justify-between" id="list-wx-banner-fengge">
+          <div class="flex items-center space-x-2">
+            <div class="w-7 h-7 rounded-lg bg-[#07C160] text-white flex items-center justify-center shrink-0">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8.5 4C4.36 4 1 6.91 1 10.5c0 2.02 1.05 3.82 2.7 4.98L3 18l3.05-1.52c.76.22 1.58.35 2.45.35.21 0 .42-.01.62-.03A6.2 6.2 0 0 1 9 15c0-3.87 3.81-7 8.5-7 .34 0 .68.02 1.01.06C17.21 5.23 13.24 4 8.5 4zm6.5 5c-3.87 0-7 2.69-7 6s3.13 6 7 6c.72 0 1.41-.1 2.06-.28L20 22l-1.04-2.07C20.17 18.84 21 17.5 21 16c0-3.31-3.13-6-7-6z"></path></svg>
+            </div>
+            <div>
+              <span class="text-[10px] text-emerald-800 font-semibold block leading-none">对方微信号</span>
+              <span class="text-xs font-mono font-bold text-slate-900 mt-0.5 block">fengge_billiards</span>
+            </div>
+          </div>
+          <button class="px-3 py-1 bg-[#07C160] hover:bg-[#06ad56] active:bg-[#059b4c] text-white text-[11px] font-bold rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer" onclick="copyTextWithFallback('fengge_billiards')" type="button">一键复制</button>
+        </div>
+      </div>
+
+      <!-- 4. 陈教练（对方婉拒） -->
+      <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-100 flex flex-col space-y-2.5" id="list-card-chenjiaolian">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="relative shrink-0">
+              <div class="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center bg-violet-950 text-white font-bold ring-2 ring-slate-800/20 shadow-xs shrink-0">陈</div>
+              <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#07C160] border-2 border-white rounded-full"></span>
+            </div>
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <h3 class="text-sm font-bold text-slate-900">陈教练</h3>
+                <span class="px-1.5 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-bold rounded border border-slate-200">斯诺克</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5 flex items-center space-x-1"><span>上海国际赛车场俱乐部 · 刚刚活跃</span></p>
+            </div>
+          </div>
+          <button class="px-3.5 py-1.5 bg-slate-100 text-slate-400 font-medium text-xs rounded-xl shrink-0 cursor-not-allowed" disabled="" id="list-greet-btn-chenjiaolian" type="button">暂不方便</button>
+        </div>
+        <div class="flex items-center justify-between py-1 border-t border-slate-100 min-h-[32px]">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="px-2 py-0.5 bg-purple-50 text-purple-700 text-[10px] font-medium rounded-md border border-purple-200">🏆 准清台/球房常客</span>
+            <span class="px-2 py-0.5 bg-slate-50 text-slate-600 text-[10px] font-medium rounded-md border border-slate-200">🤝 输家买单</span>
+          </div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5 flex items-center justify-between text-xs text-slate-600">
+          <div class="flex items-center space-x-1.5 truncate">
+            <span>🚫</span>
+            <span class="text-[11px] truncate">对方暂不方便约球 · 24小时后可重新打招呼</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. 老周（超时过期） -->
+      <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-100 flex flex-col space-y-2.5" id="list-card-laozhou">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="relative shrink-0">
+              <div class="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center bg-amber-700 text-white font-bold ring-2 ring-amber-400/20 shadow-xs shrink-0">周</div>
+              <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-slate-300 border-2 border-white rounded-full"></span>
+            </div>
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <h3 class="text-sm font-bold text-slate-900">老周</h3>
+                <span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded border border-emerald-200">中式黑八</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5 flex items-center space-x-1"><span>嘉定体育馆桌球厅 · 昨天活跃</span></p>
+            </div>
+          </div>
+          <button class="px-3.5 py-1.5 bg-[#07C160] hover:bg-[#06ad56] active:bg-[#059b4c] text-white shadow-sm transition-all text-xs font-medium rounded-xl cursor-pointer shrink-0" id="list-greet-btn-laozhou" onclick="openPhraseSheet('laozhou')" type="button">重新打招呼</button>
+        </div>
+        <div class="flex items-center justify-between py-1 border-t border-slate-100 min-h-[32px]">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="px-2 py-0.5 bg-emerald-50 text-emerald-800 text-[10px] font-medium rounded-md border border-emerald-200">☕ 娱乐休闲/欢乐局</span>
+            <span class="px-2 py-0.5 bg-slate-50 text-slate-600 text-[10px] font-medium rounded-md border border-slate-200">🤝 台费AA</span>
+          </div>
+        </div>
+        <div class="bg-amber-50 border border-amber-200/80 rounded-xl p-2.5 flex items-start space-x-1.5 text-xs text-amber-900" id="list-expired-banner-laozhou">
+          <span class="shrink-0 leading-none mt-0.5">⏰</span>
+          <p class="text-[11px] leading-relaxed text-amber-800">对方超过24小时未响应，系统已自动重置为初始状态，可再次发起邀约</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 地图选择新位置全屏抽屉 (z-[65]) ==================== -->
+    <div class="absolute inset-0 z-[65] bg-[#faf8ff] flex flex-col transition-transform duration-300 ease-out transform translate-x-full overflow-hidden" id="location-picker-view">
+      <!-- 顶部栏 -->
+      <header class="pt-3 px-4 pb-2.5 bg-white border-b border-slate-100 z-40 shadow-xs shrink-0">
+        <div class="flex justify-between items-center text-xs font-semibold text-slate-900 mb-1.5 px-1 tracking-tight">
+          <span>09:41</span>
+          <div class="flex items-center space-x-1.5 text-slate-800">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z"></path></svg>
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0012 4z"></path></svg>
+            <div class="w-5 h-2.5 border border-slate-700 rounded-sm p-0.5 flex items-center">
+              <div class="h-full w-full bg-slate-800 rounded-2xs"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between mt-1">
+          <button aria-label="返回" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 active:scale-95 flex items-center justify-center text-slate-700 transition-all cursor-pointer" onclick="closeLocationPicker()" type="button">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+          </button>
+          <h1 class="text-base font-bold tracking-tight text-[#131b2e]">选择位置</h1>
+          <div aria-hidden="true" class="w-8 h-8"></div>
+        </div>
+      </header>
+
+      <!-- 主视口：上半部分矢量地图 + 下半部分 POI 列表 -->
+      <div class="relative flex-1 flex flex-col overflow-hidden">
+        <!-- 上半部分（48%）：交互矢量地图与搜索框 -->
+        <section class="relative h-[48%] w-full bg-[#f1f5f9] overflow-hidden">
+          <!-- 可缩放/平移的地图图层 -->
+          <div class="absolute inset-0 w-full h-full transition-transform duration-300 ease-out origin-center" id="picker-map-canvas" style="transform: scale(1) translate(0px, 0px);">
+            <svg class="w-full h-full object-cover" preserveAspectRatio="xMidYMid slice" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg">
+              <rect fill="#f8fafc" height="360" width="400"></rect>
+              <!-- 公园绿地 -->
+              <path class="map-park" d="M -20,20 Q 40,10 90,45 T 140,130 Q 80,160 20,120 Z"></path>
+              <path class="map-park" d="M 260,180 Q 340,150 420,210 T 360,350 Q 280,330 250,260 Z"></path>
+              <!-- 远香湖水系 -->
+              <path class="map-river" d="M 270,360 C 290,290 320,240 420,220"></path>
+              <path class="map-river" d="M -10,180 Q 120,170 190,210 T 260,360" stroke-width="12"></path>
+              <!-- 街区建筑 -->
+              <rect class="map-building" height="24" rx="4" width="34" x="30" y="160"></rect>
+              <rect class="map-building" height="20" rx="4" width="40" x="72" y="160"></rect>
+              <rect class="map-building" height="30" rx="4" width="46" x="30" y="194"></rect>
+              <rect class="map-building" height="35" rx="4" width="36" x="84" y="190"></rect>
+              <rect class="map-building" height="36" rx="4" width="55" x="180" y="50"></rect>
+              <rect class="map-building" height="42" rx="4" width="45" x="245" y="45"></rect>
+              <rect class="map-building" height="26" rx="4" width="70" x="190" y="96"></rect>
+              <rect class="map-building" height="32" rx="4" width="48" x="150" y="270"></rect>
+              <rect class="map-building" height="35" rx="4" width="38" x="206" y="280"></rect>
+              <!-- 路网底层描边 -->
+              <line class="map-road-casing" x1="150" x2="150" y1="-20" y2="380"></line>
+              <line class="map-road-casing" x1="-20" x2="420" y1="180" y2="180"></line>
+              <line class="map-road-casing" x1="-20" x2="420" y1="260" y2="260"></line>
+              <line class="map-road-casing" stroke-width="14" x1="0" x2="380" y1="40" y2="380"></line>
+              <!-- 路网主白线 -->
+              <line class="map-road-main" x1="150" x2="150" y1="-20" y2="380"></line>
+              <line class="map-road-main" x1="-20" x2="420" y1="180" y2="180"></line>
+              <line class="map-road-main" x1="-20" x2="420" y1="260" y2="260"></line>
+              <line class="map-road-main" stroke-width="10" x1="0" x2="380" y1="40" y2="380"></line>
+              <!-- 次干道 -->
+              <line class="map-road-sub" x1="60" x2="60" y1="180" y2="260"></line>
+              <line class="map-road-sub" x1="280" x2="280" y1="80" y2="180"></line>
+              <!-- 道路名称 -->
+              <text fill="#94a3b8" font-size="9" font-weight="600" letter-spacing="1" x="156" y="70">博乐路</text>
+              <text fill="#94a3b8" font-size="9" font-weight="600" letter-spacing="1" x="210" y="174">裕民路</text>
+              <text fill="#94a3b8" font-size="9" font-weight="600" letter-spacing="1" x="50" y="254">白银路</text>
+              <!-- 地图地标徽章 -->
+              <g transform="translate(42, 65)">
+                <rect fill="#ffffff" height="18" rx="9" stroke="#e2e8f0" stroke-width="0.6" width="66"></rect>
+                <circle cx="9" cy="9" fill="#10b981" r="4"></circle>
+                <text fill="#334155" font-size="8.5" font-weight="600" x="18" y="12.5">嘉定紫藤园</text>
+              </g>
+              <g transform="translate(290, 220)">
+                <rect fill="#ffffff" height="18" rx="9" stroke="#e2e8f0" stroke-width="0.6" width="66"></rect>
+                <circle cx="9" cy="9" fill="#0284c7" r="4"></circle>
+                <text fill="#334155" font-size="8.5" font-weight="600" x="18" y="12.5">远香湖水系</text>
+              </g>
+              <g transform="translate(195, 290)">
+                <rect fill="#ffffff" height="18" rx="9" stroke="#e2e8f0" stroke-width="0.6" width="60"></rect>
+                <circle cx="9" cy="9" fill="#8b5cf6" r="4"></circle>
+                <text fill="#334155" font-size="8.5" font-weight="600" x="18" y="12.5">保利大剧院</text>
+              </g>
+            </svg>
+          </div>
+
+          <!-- 顶部悬浮搜索栏 -->
+          <div class="absolute top-3 inset-x-3 z-20">
+            <div class="h-11 bg-white/95 backdrop-blur-md rounded-xl shadow-[0_4px_16px_rgba(15,23,42,0.08)] border border-slate-200/80 px-3 flex items-center gap-2.5">
+              <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg>
+              <input class="w-full bg-transparent text-[#131b2e] placeholder:text-slate-400 text-[13px] border-none p-0 focus:ring-0 focus:outline-none" id="poi-search-input" oninput="filterPoiList(this.value)" placeholder="搜索小区 / 写字楼 / 球房 / 地标" type="text" value="" />
+              <button aria-label="清空输入" class="hidden text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer shrink-0" id="poi-search-clear" onclick="clearPoiSearch()" type="button">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" fill-rule="evenodd"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- 地图中心选点大头针与当前地点气泡 -->
+          <div class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center z-10 -translate-y-3">
+            <div class="bg-[#283044] text-[#eef0ff] text-[11px] font-semibold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1.5 mb-1.5 max-w-[210px]">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#10b981] shrink-0"></span>
+              <span class="truncate" id="picker-pin-label">裕民路南苑六村</span>
+            </div>
+            <div class="relative flex flex-col items-center animate-pin-bounce">
+              <div class="w-9 h-9 bg-[#10b981] rounded-full rounded-br-none -rotate-45 flex items-center justify-center shadow-[0_6px_16px_-2px_rgba(16,185,129,0.45)] border-2 border-white">
+                <span class="text-white text-sm rotate-45 leading-none">🎱</span>
+              </div>
+              <div class="w-3.5 h-1.5 bg-slate-900/25 rounded-full blur-[1.5px] mt-0.5"></div>
+            </div>
+          </div>
+
+          <!-- 地图右下角悬浮控制按钮组 -->
+          <div class="absolute right-3 bottom-5 z-20 flex flex-col gap-2">
+            <button aria-label="定位到当前位置" class="w-9 h-9 rounded-xl bg-white/95 backdrop-blur shadow-[0_4px_12px_rgba(15,23,42,0.12)] border border-slate-200/90 text-[#006c49] flex items-center justify-center active:scale-95 transition-transform cursor-pointer" onclick="resetPickerToCurrentLocation()" type="button">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke-width="2.2"></circle><path d="M12 2v3m0 14v3M2 12h3m14 0h3" stroke-linecap="round" stroke-width="2.2"></path><circle cx="12" cy="12" r="8" stroke-width="1.8"></circle></svg>
+            </button>
+            <div class="flex flex-col bg-white/95 backdrop-blur rounded-xl shadow-[0_4px_12px_rgba(15,23,42,0.12)] border border-slate-200/90 overflow-hidden divide-y divide-slate-100">
+              <button aria-label="放大地图" class="w-9 h-8 flex items-center justify-center text-slate-700 hover:bg-slate-50 active:scale-90 transition-transform cursor-pointer" onclick="zoomPickerMap(0.15)" type="button">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-width="2.2"></path></svg>
+              </button>
+              <button aria-label="缩小地图" class="w-9 h-8 flex items-center justify-center text-slate-700 hover:bg-slate-50 active:scale-90 transition-transform cursor-pointer" onclick="zoomPickerMap(-0.15)" type="button">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 12h14" stroke-linecap="round" stroke-width="2.2"></path></svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 下半部分（52%）：附近 POI 列表 -->
+        <section class="relative flex-1 bg-white rounded-t-[20px] shadow-[0_-6px_20px_rgba(15,23,42,0.06)] flex flex-col -mt-3.5 z-30 overflow-hidden">
+          <div class="w-9 h-1 bg-slate-200 rounded-full mx-auto mt-2.5 mb-1 shrink-0"></div>
+          <div class="flex-1 overflow-y-auto no-scrollbar divide-y divide-slate-100 px-4 pb-24" id="poi-list-container">
+            <!-- 动态渲染 POI 项 -->
+          </div>
+        </section>
+
+        <!-- 底部吸底确认按钮 -->
+        <footer class="absolute bottom-0 inset-x-0 px-4 pt-3 pb-4 z-40 bg-gradient-to-t from-white via-white/95 to-transparent">
+          <button class="w-full h-[50px] bg-[#10b981] hover:bg-[#059669] active:bg-[#059669] text-white text-[15px] font-semibold rounded-xl flex items-center justify-center gap-2 shadow-[0_6px_16px_-2px_rgba(16,185,129,0.35)] active:scale-[0.99] transition-all cursor-pointer" onclick="confirmSelectedLocation()" type="button">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+            <span>确认选择此地点</span>
+          </button>
+        </footer>
+      </div>
+    </div>
+
+    <!-- ==================== 个人资料抽屉 (z-[60]) ==================== -->
+    <div class="absolute inset-0 z-[60] bg-[#F6F7FB] flex flex-col transition-transform duration-300 ease-out transform translate-x-full overflow-hidden" id="profile-drawer">
+      <header class="relative z-30 pt-3 px-4 pb-2.5 bg-white/95 backdrop-blur-md border-b border-slate-100 shrink-0">
+        <div class="flex justify-between items-center text-xs font-semibold text-slate-900 mb-1.5 px-1 tracking-tight">
+          <span>09:41</span>
+          <div class="flex items-center space-x-1.5 text-slate-800">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z"></path></svg>
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0012 4z"></path></svg>
+            <div class="w-5 h-2.5 border border-slate-700 rounded-sm p-0.5 flex items-center">
+              <div class="h-full w-full bg-slate-800 rounded-2xs"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between mt-1">
+          <button aria-label="返回" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 active:bg-slate-200 text-slate-700 cursor-pointer" onclick="closeProfileDrawer()" type="button">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+          </button>
+          <h1 class="text-base font-bold text-slate-900 tracking-wide">个人资料</h1>
+          <div class="w-8"></div>
+        </div>
+      </header>
+
+      <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4">
+        <!-- 个人信息卡片 -->
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 flex flex-col items-center text-center">
+          <div class="relative mb-2 w-16 h-16 cursor-pointer" id="drawer-avatar-wrapper" onclick="handleDrawerAvatarClick()" title="点击立即登录获取微信手机号">
+            <div class="w-16 h-16 rounded-full bg-slate-100 border border-slate-200 shadow-sm overflow-hidden flex items-center justify-center transition-all relative" id="my-profile-avatar-container">
+              <svg class="w-8 h-8 text-slate-400" fill="currentColor" id="drawer-avatar-icon" viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+              </svg>
+            </div>
+            <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-slate-300 rounded-full border-2 border-white transition-colors" id="drawer-avatar-dot"></span>
+          </div>
+          <div class="flex items-center justify-center space-x-1.5 mb-2.5">
+            <h2 class="text-sm font-bold text-slate-700" id="user-nickname-text">未登录球友</h2>
+            <span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-500 transition-colors" id="sync-status-badge">未登录</span>
+          </div>
+        </div>
+
+        <!-- 台球档案卡片 -->
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 space-y-4">
+          <div class="border-b border-slate-100 pb-2.5">
+            <span class="text-sm font-bold text-slate-900">台球档案</span>
+          </div>
+
+          <!-- 1. 常玩项目 -->
+          <div>
+            <div class="flex items-center justify-between mb-2.5">
+              <span class="text-xs font-semibold text-slate-700">常玩项目（多选）</span>
+              <span class="text-[11px] text-slate-400">已选 <span class="text-[#07C160] font-bold" id="games-count">2</span> 项</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <button class="game-chip selected py-2 px-1 text-center text-xs font-medium rounded-xl border bg-emerald-50 text-emerald-800 border-emerald-400 shadow-xs flex items-center justify-center space-x-1 cursor-pointer transition-all" onclick="toggleGameChip(this)" type="button">
+                <span class="chip-check text-xs font-bold text-[#07C160]">✓</span><span>中式黑八</span>
+              </button>
+              <button class="game-chip selected py-2 px-1 text-center text-xs font-medium rounded-xl border bg-emerald-50 text-emerald-800 border-emerald-400 shadow-xs flex items-center justify-center space-x-1 cursor-pointer transition-all" onclick="toggleGameChip(this)" type="button">
+                <span class="chip-check text-xs font-bold text-[#07C160]">✓</span><span>中式九球</span>
+              </button>
+              <button class="game-chip py-2 px-1 text-center text-xs font-medium rounded-xl border bg-slate-50 text-slate-600 border-slate-200 flex items-center justify-center space-x-1 cursor-pointer transition-all" onclick="toggleGameChip(this)" type="button">
+                <span class="chip-check hidden text-xs font-bold text-[#07C160]">✓</span><span>美式九球</span>
+              </button>
+              <button class="game-chip py-2 px-1 text-center text-xs font-medium rounded-xl border bg-slate-50 text-slate-600 border-slate-200 flex items-center justify-center space-x-1 cursor-pointer transition-all" onclick="toggleGameChip(this)" type="button">
+                <span class="chip-check hidden text-xs font-bold text-[#07C160]">✓</span><span>斯诺克</span>
+              </button>
+              <button class="game-chip py-2 px-1 text-center text-xs font-medium rounded-xl border bg-slate-50 text-slate-600 border-slate-200 flex items-center justify-center space-x-1 cursor-pointer transition-all" onclick="toggleGameChip(this)" type="button">
+                <span class="chip-check hidden text-xs font-bold text-[#07C160]">✓</span><span>美式普尔</span>
+              </button>
+              <button class="game-chip py-2 px-1 text-center text-xs font-medium rounded-xl border bg-slate-50 text-slate-600 border-slate-200 flex items-center justify-center space-x-1 cursor-pointer transition-all" onclick="toggleGameChip(this)" type="button">
+                <span class="chip-check hidden text-xs font-bold text-[#07C160]">✓</span><span>花式撞球</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. 实力段位 -->
+          <div class="border-t border-slate-100 pt-3">
+            <div class="flex items-center justify-between py-2 cursor-pointer active:bg-slate-50 rounded-xl px-1.5 transition-colors group select-none hover:bg-slate-50" onclick="openLevelSheet()" role="button" tabindex="0">
+              <div class="flex flex-col">
+                <span class="text-xs font-semibold text-slate-700 group-hover:text-slate-900">实力段位（单选）</span>
+                <span class="text-[11px] text-slate-400 mt-0.5" id="level-sub-display">一杆连进3~5球</span>
+              </div>
+              <div class="flex items-center space-x-1.5 shrink-0 pointer-events-none">
+                <span class="text-xs font-bold text-[#07C160] bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200" id="current-level-text">进阶玩家/有准度</span>
+                <svg class="w-4 h-4 text-slate-400 group-hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. 台费分摊规则 -->
+          <div class="border-t border-slate-100 pt-3">
+            <div class="flex items-center justify-between py-2 cursor-pointer active:bg-slate-50 rounded-xl px-1.5 transition-colors group select-none hover:bg-slate-50" onclick="openSplitSheet()" role="button" tabindex="0">
+              <div class="flex flex-col">
+                <span class="text-xs font-semibold text-slate-700 group-hover:text-slate-900">台费分摊规则</span>
+                <span class="text-[11px] text-slate-400 mt-0.5" id="fee-sub-display">平摊台费，轻松无负担</span>
+              </div>
+              <div class="flex items-center space-x-1.5 shrink-0 pointer-events-none">
+                <span class="text-xs font-bold text-[#07C160] bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200" id="current-fee-text">台费AA</span>
+                <svg class="w-4 h-4 text-slate-400 group-hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 隐私偏好 -->
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-100">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3">
+            <span class="text-sm font-bold text-slate-900">隐私偏好</span>
+          </div>
+          <div class="flex items-center justify-between py-1">
+            <div>
+              <p class="text-xs font-semibold text-slate-800">地图隐身模式</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">开启后，雷达中对附近球友隐藏位置与状态</p>
+            </div>
+            <button aria-checked="false" class="w-11 h-6 bg-slate-200 rounded-full transition-colors relative flex items-center p-0.5 cursor-pointer" id="stealth-toggle" onclick="toggleStealth()" role="switch" type="button">
+              <div class="w-5 h-5 bg-white rounded-full shadow-md transform transition-transform translate-x-0" id="stealth-thumb"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 微信手机号授权 ActionSheet (z-[80]) ==================== -->
+    <div class="absolute inset-0 z-[80] bg-slate-900/60 backdrop-blur-xs hidden transition-opacity duration-300 opacity-0 flex flex-col justify-end" id="phone-auth-backdrop" onclick="if(event.target===this)closePhoneAuthSheet()">
+      <div class="bg-white rounded-t-3xl p-5 w-full space-y-4 transform transition-transform duration-300 ease-out translate-y-full flex flex-col shadow-2xl" id="phone-auth-sheet">
+        <div class="w-10 h-1 bg-slate-300 rounded-full mx-auto shrink-0 -mt-1 mb-1"></div>
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-7 h-7 rounded-full bg-[#07C160] flex items-center justify-center text-white shadow-xs">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8.5 4C4.36 4 1 6.91 1 10.5c0 2.02 1.05 3.82 2.7 4.98L3 18l3.05-1.52c.76.22 1.58.35 2.45.35.21 0 .42-.01.62-.03A6.2 6.2 0 0 1 9 15c0-3.87 3.81-7 8.5-7 .34 0 .68.02 1.01.06C17.21 5.23 13.24 4 8.5 4zm6.5 5c-3.87 0-7 2.69-7 6s3.13 6 7 6c.72 0 1.41-.1 2.06-.28L20 22l-1.04-2.07C20.17 18.84 21 17.5 21 16c0-3.31-3.13-6-7-6z"></path></svg>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-900 leading-none">找球友 · 墨绿台球</p>
+              <p class="text-[10px] text-slate-400 mt-1 leading-none">申请获取以下权限</p>
+            </div>
+          </div>
+          <button aria-label="关闭" class="w-7 h-7 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 hover:text-slate-600 active:scale-95 transition-all text-xs font-semibold cursor-pointer" onclick="closePhoneAuthSheet()" type="button">✕</button>
+        </div>
+        <div class="space-y-1">
+          <h3 class="text-base font-bold text-slate-900">申请使用你的微信绑定手机号</h3>
+          <p class="text-xs text-slate-400">用于球友约球联系、约局结果通知及身份验证</p>
+        </div>
+        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-full bg-emerald-50 text-[#07C160] flex items-center justify-center">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 4V3z"></path></svg>
+            </div>
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <span class="text-sm font-bold font-mono text-slate-900">138 **** 8888</span>
+                <span class="text-[10px] text-slate-500 bg-white px-1.5 py-0.5 rounded border border-slate-200">微信绑定号码</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5">中国移动</p>
+            </div>
+          </div>
+          <div class="w-5 h-5 rounded-full bg-[#07C160] text-white flex items-center justify-center text-xs font-bold shadow-xs">✓</div>
+        </div>
+        <div class="grid grid-cols-2 gap-3 pt-2">
+          <button class="py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 active:bg-slate-100 transition-colors cursor-pointer" onclick="closePhoneAuthSheet();showAppToast('已取消手机号授权');" type="button">拒绝</button>
+          <button class="py-2.5 rounded-xl bg-[#07C160] hover:bg-[#06ad56] active:bg-[#059b4c] text-white text-xs font-bold shadow-md transition-all active:scale-95 cursor-pointer flex items-center justify-center space-x-1" onclick="handlePhoneAllow()" type="button">
+            <span>允许使用</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 卡通头像选择 ActionSheet (z-[85]) ==================== -->
+    <div class="absolute inset-0 z-[85] bg-slate-900/60 backdrop-blur-xs hidden transition-opacity duration-300 opacity-0 flex flex-col justify-end" id="avatar-modal-backdrop" onclick="if(event.target===this)closeAvatarSheet()">
+      <div class="bg-white rounded-t-3xl p-5 w-full space-y-4 transform transition-transform duration-300 ease-out translate-y-full flex flex-col shadow-2xl" id="avatar-modal-sheet">
+        <div class="w-10 h-1 bg-slate-300 rounded-full mx-auto shrink-0 -mt-1 mb-1"></div>
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0">
+          <div class="flex flex-col">
+            <span class="text-base font-bold text-slate-900">选择球友专属卡通头像</span>
+            <span class="text-[11px] text-slate-400 mt-0.5">个性台球形象，助你闪耀球局</span>
+          </div>
+          <button aria-label="关闭" class="w-7 h-7 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 hover:text-slate-600 active:scale-95 transition-all text-xs font-semibold cursor-pointer" onclick="closeAvatarSheet()" type="button">✕</button>
+        </div>
+        <div class="grid grid-cols-2 gap-3 py-2 max-w-[280px] mx-auto w-full">
+          <!-- 男生卡通头像 -->
+          <div class="avatar-card selected relative p-4 rounded-3xl border-2 border-[#07C160] bg-emerald-50/70 flex flex-col items-center justify-center cursor-pointer transition-all active:scale-95 shadow-sm" id="avatar-card-boy" onclick="selectGenderAvatar('boy')">
+            <div class="w-16 h-16 rounded-full bg-slate-900 overflow-hidden flex items-center justify-center shadow-md relative pointer-events-none">
+              <svg class="w-full h-full" fill="none" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="32" cy="32" fill="#1E293B" r="32"></circle>
+                <path d="M18 24C18 16.268 24.268 10 32 10C39.732 10 46 16.268 46 24V26H18V24Z" fill="#0F172A"></path>
+                <circle cx="32" cy="33" fill="#FED7AA" r="14"></circle>
+                <path d="M16 23C16 16 23 13 32 13C41 13 47 16 47 23H53C53 23 51 19 45 19H21C15 19 13 23 13 23H16Z" fill="#1E3A8A"></path>
+                <rect fill="#2563EB" height="6.5" rx="2" width="30" x="17" y="20"></rect>
+                <circle cx="27" cy="32" fill="#1F2937" r="2.2"></circle>
+                <circle cx="37" cy="32" fill="#1F2937" r="2.2"></circle>
+                <path d="M29 38C31 40.5 33 40.5 35 38" stroke="#D97706" stroke-linecap="round" stroke-width="2"></path>
+                <path d="M14 62C14 50 22 42 32 42C42 42 50 50 50 62H14Z" fill="#047857"></path>
+                <circle cx="47" cy="46" fill="#0F172A" r="6.5" stroke="#FFFFFF" stroke-width="1.2"></circle>
+                <text fill="#FFFFFF" font-family="sans-serif" font-size="6.5" font-weight="bold" text-anchor="middle" x="47" y="49.5">8</text>
+                <line stroke="#EAB308" stroke-linecap="round" stroke-width="2.5" x1="16" x2="25" y1="34" y2="52"></line>
+              </svg>
+            </div>
+            <div class="avatar-check absolute top-2 right-2 w-4 h-4 rounded-full bg-[#07C160] text-white flex items-center justify-center text-[10px] font-bold shadow-xs">✓</div>
+          </div>
+
+          <!-- 女生卡通头像 -->
+          <div class="avatar-card relative p-4 rounded-3xl border-2 border-slate-200 bg-slate-50 flex flex-col items-center justify-center cursor-pointer transition-all active:scale-95 shadow-xs" id="avatar-card-girl" onclick="selectGenderAvatar('girl')">
+            <div class="w-16 h-16 rounded-full bg-rose-500 overflow-hidden flex items-center justify-center shadow-md relative pointer-events-none">
+              <svg class="w-full h-full" fill="none" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="32" cy="32" fill="#F43F5E" r="32"></circle>
+                <circle cx="17" cy="21" fill="#831843" r="6.5"></circle>
+                <circle cx="47" cy="21" fill="#831843" r="6.5"></circle>
+                <path d="M18 25C18 16 24 12 32 12C40 12 46 16 46 25V30H18V25Z" fill="#831843"></path>
+                <circle cx="32" cy="33" fill="#FED7AA" r="13"></circle>
+                <circle cx="27" cy="32" fill="#1F2937" r="2.2"></circle>
+                <circle cx="37" cy="32" fill="#1F2937" r="2.2"></circle>
+                <circle cx="23.5" cy="35" fill="#FDA4AF" opacity="0.85" r="2.5"></circle>
+                <circle cx="40.5" cy="35" fill="#FDA4AF" opacity="0.85" r="2.5"></circle>
+                <path d="M29 38Q32 41 35 38" fill="none" stroke="#E11D48" stroke-linecap="round" stroke-width="2"></path>
+                <path d="M15 62C15 50 22 42 32 42C42 42 49 50 49 62H15Z" fill="#BE185D"></path>
+                <circle cx="47" cy="46" fill="#FACC15" r="6.5" stroke="#B45309" stroke-width="1.2"></circle>
+                <text fill="#78350F" font-family="sans-serif" font-size="6.5" font-weight="bold" text-anchor="middle" x="47" y="49.5">9</text>
+                <line stroke="#F59E0B" stroke-linecap="round" stroke-width="2.5" x1="16" x2="25" y1="34" y2="52"></line>
+              </svg>
+            </div>
+            <div class="avatar-check absolute top-2 right-2 w-4 h-4 rounded-full bg-[#07C160] text-white hidden items-center justify-center text-[10px] font-bold shadow-xs">✓</div>
+          </div>
+        </div>
+        <div class="pt-2">
+          <button class="w-full py-3 px-4 bg-[#07C160] hover:bg-[#06ad56] active:bg-[#059b4c] text-white text-sm font-bold rounded-2xl shadow-md flex items-center justify-center space-x-1.5 cursor-pointer transition-all active:scale-95" id="btn-confirm-avatar" onclick="handleConfirmAvatar()" type="button">
+            <span>确定使用该头像</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 实力段位 ActionSheet (z-[70]) ==================== -->
+    <div class="absolute inset-0 z-[70] bg-slate-900/60 backdrop-blur-xs hidden transition-opacity duration-300 opacity-0 flex flex-col justify-end" id="level-modal-backdrop" onclick="if(event.target===this)closeLevelSheet()">
+      <div class="bg-white rounded-t-3xl p-4 w-full space-y-3 transform transition-transform duration-300 ease-out translate-y-full flex flex-col max-h-[85vh] shadow-2xl" id="level-sheet">
+        <div class="w-10 h-1 bg-slate-300 rounded-full mx-auto shrink-0 mb-1"></div>
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0">
+          <div class="flex flex-col">
+            <span class="text-sm font-bold text-slate-900">选择实力段位</span>
+            <span class="text-[11px] text-slate-400 mt-0.5">根据实际水平选择，便于匹配合适球友</span>
+          </div>
+          <button aria-label="关闭" class="w-7 h-7 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 hover:text-slate-600 active:scale-95 transition-all text-xs font-semibold cursor-pointer" onclick="closeLevelSheet()" type="button">✕</button>
+        </div>
+        <div class="space-y-2 overflow-y-auto no-scrollbar max-h-[55vh] py-1" id="level-options-container">
+          <div class="level-option-item p-3 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-emerald-50 hover:border-[#07C160] cursor-pointer flex items-center justify-between transition-all" data-level="纯萌新/体验派" onclick="chooseLevel('纯萌新/体验派', '一杆连进1~2球')">
+            <div>
+              <p class="level-title text-xs font-bold text-slate-900">纯萌新/体验派</p>
+              <p class="level-desc text-[11px] text-slate-500 mt-0.5">一杆连进1~2球</p>
+            </div>
+            <span class="level-check hidden text-sm font-bold text-[#07C160]">✓</span>
+          </div>
+          <div class="level-option-item p-3 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-emerald-50 hover:border-[#07C160] cursor-pointer flex items-center justify-between transition-all" data-level="娱乐休闲/欢乐局" onclick="chooseLevel('娱乐休闲/欢乐局', '一杆连进2~3球')">
+            <div>
+              <p class="level-title text-xs font-bold text-slate-900">娱乐休闲/欢乐局</p>
+              <p class="level-desc text-[11px] text-slate-500 mt-0.5">一杆连进2~3球</p>
+            </div>
+            <span class="level-check hidden text-sm font-bold text-[#07C160]">✓</span>
+          </div>
+          <div class="level-option-item p-3 rounded-2xl border border-[#07C160] bg-emerald-50 cursor-pointer flex items-center justify-between transition-all" data-level="进阶玩家/有准度" onclick="chooseLevel('进阶玩家/有准度', '一杆连进3~5球')">
+            <div>
+              <p class="level-title text-xs font-bold text-[#07C160]">进阶玩家/有准度</p>
+              <p class="level-desc text-[11px] text-emerald-800 mt-0.5">一杆连进3~5球</p>
+            </div>
+            <span class="level-check text-sm font-bold text-[#07C160]">✓</span>
+          </div>
+          <div class="level-option-item p-3 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-emerald-50 hover:border-[#07C160] cursor-pointer flex items-center justify-between transition-all" data-level="大神级/炸清选手" onclick="chooseLevel('大神级/炸清选手', '经常一杆清台')">
+            <div>
+              <p class="level-title text-xs font-bold text-slate-900">大神级/炸清选手</p>
+              <p class="level-desc text-[11px] text-slate-500 mt-0.5">经常一杆清台（炸清/接清）</p>
+            </div>
+            <span class="level-check hidden text-sm font-bold text-[#07C160]">✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 台费分摊规则 ActionSheet (z-[70]) ==================== -->
+    <div class="absolute inset-0 z-[70] bg-slate-900/60 backdrop-blur-xs hidden transition-opacity duration-300 opacity-0 flex flex-col justify-end" id="split-modal-backdrop" onclick="if(event.target===this)closeSplitSheet()">
+      <div class="bg-white rounded-t-3xl p-4 w-full space-y-3 transform transition-transform duration-300 ease-out translate-y-full flex flex-col max-h-[85vh] shadow-2xl" id="split-sheet">
+        <div class="w-10 h-1 bg-slate-300 rounded-full mx-auto shrink-0 mb-1"></div>
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0">
+          <div class="flex flex-col">
+            <span class="text-sm font-bold text-slate-900">台费分摊规则</span>
+            <span class="text-[11px] text-slate-400 mt-0.5">约定组局球费承担规则，避免结账尴尬</span>
+          </div>
+          <button aria-label="关闭" class="w-7 h-7 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 hover:text-slate-600 active:scale-95 transition-all text-xs font-semibold cursor-pointer" onclick="closeSplitSheet()" type="button">✕</button>
+        </div>
+        <div class="space-y-2 overflow-y-auto no-scrollbar max-h-[55vh] py-1" id="split-options-container">
+          <div class="split-option-item p-3 rounded-2xl border border-[#07C160] bg-emerald-50 cursor-pointer flex items-center justify-between transition-all" data-split="台费AA" onclick="chooseSplit('台费AA', '平摊台费，轻松无负担')">
+            <div class="flex items-center space-x-2.5">
+              <span>🤝</span>
+              <div>
+                <p class="split-title text-xs font-bold text-[#07C160]">台费AA</p>
+                <p class="split-desc text-[11px] text-emerald-800 mt-0.5">平摊台费，轻松无负担</p>
+              </div>
+            </div>
+            <span class="split-check text-sm font-bold text-[#07C160]">✓</span>
+          </div>
+          <div class="split-option-item p-3 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-emerald-50 hover:border-[#07C160] cursor-pointer flex items-center justify-between transition-all" data-split="我付台费" onclick="chooseSplit('我付台费', '豪爽请客，来打球痛快为主')">
+            <div class="flex items-center space-x-2.5">
+              <span>💳</span>
+              <div>
+                <p class="split-title text-xs font-bold text-slate-900">我付台费</p>
+                <p class="split-desc text-[11px] text-slate-500 mt-0.5">豪爽请客，来打球痛快为主</p>
+              </div>
+            </div>
+            <span class="split-check hidden text-sm font-bold text-[#07C160]">✓</span>
+          </div>
+          <div class="split-option-item p-3 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-emerald-50 hover:border-[#07C160] cursor-pointer flex items-center justify-between transition-all" data-split="输家买单" onclick="chooseSplit('输家买单', '切磋较量，胜负定台费归属')">
+            <div class="flex items-center space-x-2.5">
+              <span>🎯</span>
+              <div>
+                <p class="split-title text-xs font-bold text-slate-900">输家买单</p>
+                <p class="split-desc text-[11px] text-slate-500 mt-0.5">切磋较量，胜负定台费归属</p>
+              </div>
+            </div>
+            <span class="split-check hidden text-sm font-bold text-[#07C160]">✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 打招呼短语 ActionSheet (z-[80]) ==================== -->
+    <div class="absolute inset-0 z-[80] bg-slate-900/60 backdrop-blur-xs hidden transition-opacity duration-300 opacity-0 flex flex-col justify-end" id="phrase-modal-backdrop" onclick="if(event.target===this)closePhraseSheet()">
+      <div class="bg-white rounded-t-3xl p-4 w-full space-y-3 transform transition-transform duration-300 ease-out translate-y-full flex flex-col max-h-[85vh] shadow-2xl" id="phrase-sheet">
+        <div class="w-10 h-1 bg-slate-300 rounded-full mx-auto shrink-0 mb-1"></div>
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0">
+          <div class="flex flex-col">
+            <span class="text-sm font-bold text-slate-900">选择打招呼短语</span>
+            <span class="text-[11px] text-slate-400 mt-0.5">向球友 <span class="font-semibold text-[#07C160]" id="target-player-name-phrase">阿杰</span> 发起邀约</span>
+          </div>
+          <button aria-label="关闭" class="w-7 h-7 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 hover:text-slate-600 active:scale-95 transition-all text-xs font-semibold cursor-pointer" onclick="closePhraseSheet()" type="button">✕</button>
+        </div>
+        <div class="space-y-2.5 overflow-y-auto no-scrollbar max-h-[55vh] py-1">
+          <div class="phrase-option-card p-3 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-emerald-50 hover:border-[#07C160] cursor-pointer active:scale-98 transition-all flex items-start space-x-2" onclick="sendGreetingOption('Hello，我看你在附近，方便一起拼个台打几局吗？')">
+            <span class="text-sm shrink-0 mt-0.5">👋</span>
+            <p class="text-xs font-medium text-slate-800 leading-relaxed">Hello，我看你在附近，方便一起拼个台打几局吗？</p>
+          </div>
+          <div class="phrase-option-card p-3 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-emerald-50 hover:border-[#07C160] cursor-pointer active:scale-98 transition-all flex items-start space-x-2" onclick="sendGreetingOption('你好呀！一个人练球有点闷，看你也在附近，要不要找个时间凑一局？台费AA，纯娱乐交个朋友～')">
+            <span class="text-sm shrink-0 mt-0.5">☕</span>
+            <p class="text-xs font-medium text-slate-800 leading-relaxed">你好呀！一个人练球有点闷，看你也在附近，要不要找个时间凑一局？台费AA，纯娱乐交个朋友～</p>
+          </div>
+          <div class="phrase-option-card p-3 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-emerald-50 hover:border-[#07C160] cursor-pointer active:scale-98 transition-all flex items-start space-x-2" onclick="sendGreetingOption('你好！想找个有强度的球友练练实战，赢家请喝水、输家付台费，有兴趣约一场吗？')">
+            <span class="text-sm shrink-0 mt-0.5">🔥</span>
+            <p class="text-xs font-medium text-slate-800 leading-relaxed">你好！想找个有强度的球友练练实战，赢家请喝水、输家付台费，有兴趣约一场吗？</p>
+          </div>
+          <div class="phrase-option-card p-3 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-emerald-50 hover:border-[#07C160] cursor-pointer active:scale-98 transition-all flex items-start space-x-2" onclick="sendGreetingOption('球友你好！这周晚上有空来附近球房开一局吗？台费算我的，主要图个打球痛快、交个球友！')">
+            <span class="text-sm shrink-0 mt-0.5">🤝</span>
+            <p class="text-xs font-medium text-slate-800 leading-relaxed">球友你好！这周晚上有空来附近球房开一局吗？台费算我的，主要图个打球痛快、交个球友！</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 全局 Toast (z-[100]) ==================== -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] bg-slate-900/90 backdrop-blur-md text-white text-xs px-4 py-2.5 rounded-full shadow-xl pointer-events-none opacity-0 transition-opacity duration-300 flex items-center space-x-2 max-w-[85%] text-center" id="global-toast">
+      <span id="toast-icon">✓</span>
+      <span id="toast-text">提示信息</span>
+    </div>
+
+    <div class="w-32 h-1 bg-slate-300 rounded-full mx-auto mb-1.5 shrink-0"></div>
+  </div>
+
+  <script>
+    // ==================== 全局状态 ====================
+    let isLoggedIn = false;
+    let selectedGender = 'boy';
+    let currentTargetId = 'ajie';
+    let toastTimer = null;
+    let stealthActive = false;
+
+    // 位置选择器状态
+    let confirmedLocationName = '裕民路南苑六村';
+    let pendingSelectedPoiId = 'poi-1';
+    let pickerZoomLevel = 1;
+    let pickerOffsetX = 0;
+    let pickerOffsetY = 0;
+
+    // 嘉定周边 POI 数据库（整合自“地图选择新位置.html”）
+    const poiListData = [
+      {
+        id: 'poi-1',
+        name: '裕民路南苑六村',
+        address: '上海市嘉定区裕民路480弄',
+        tag: '当前位置',
+        offsetX: 0,
+        offsetY: 0
+      },
+      {
+        id: 'poi-2',
+        name: '嘉定紫藤园台球俱乐部',
+        address: '博乐路65号紫藤园旁2楼 (近北门)',
+        tag: '热门球房',
+        offsetX: 28,
+        offsetY: 36
+      },
+      {
+        id: 'poi-3',
+        name: '远香湖公园球友活动中心',
+        address: '白银路1000号水景长廊东侧',
+        tag: '球友常聚',
+        offsetX: -36,
+        offsetY: -24
+      },
+      {
+        id: 'poi-4',
+        name: '丰庄茶艺台球生活馆',
+        address: '丰庄路218号 (近嘉定新城站)',
+        tag: '休闲球馆',
+        offsetX: 22,
+        offsetY: -34
+      },
+      {
+        id: 'poi-5',
+        name: '中广国际大厦',
+        address: '沪宜公路3099号',
+        tag: '商圈地标',
+        offsetX: -18,
+        offsetY: 28
+      },
+      {
+        id: 'poi-6',
+        name: '保利大剧院',
+        address: '白银路159号',
+        tag: '地标建筑',
+        offsetX: -12,
+        offsetY: -40
+      }
+    ];
+
+    // 卡通头像 SVG 定义
+    const cartoonAvatars = {
+      boy: `<svg class="w-full h-full" fill="none" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" fill="#1E293B" r="32"></circle>
+        <path d="M18 24C18 16.268 24.268 10 32 10C39.732 10 46 16.268 46 24V26H18V24Z" fill="#0F172A"></path>
+        <circle cx="32" cy="33" fill="#FED7AA" r="14"></circle>
+        <path d="M16 23C16 16 23 13 32 13C41 13 47 16 47 23H53C53 23 51 19 45 19H21C15 19 13 23 13 23H16Z" fill="#1E3A8A"></path>
+        <rect fill="#2563EB" height="6.5" rx="2" width="30" x="17" y="20"></rect>
+        <circle cx="27" cy="32" fill="#1F2937" r="2.2"></circle>
+        <circle cx="37" cy="32" fill="#1F2937" r="2.2"></circle>
+        <path d="M29 38C31 40.5 33 40.5 35 38" stroke="#D97706" stroke-linecap="round" stroke-width="2"></path>
+        <path d="M14 62C14 50 22 42 32 42C42 42 50 50 50 62H14Z" fill="#047857"></path>
+        <circle cx="47" cy="46" fill="#0F172A" r="6.5" stroke="#FFFFFF" stroke-width="1.2"></circle>
+        <text fill="#FFFFFF" font-family="sans-serif" font-size="6.5" font-weight="bold" text-anchor="middle" x="47" y="49.5">8</text>
+        <line stroke="#EAB308" stroke-linecap="round" stroke-width="2.5" x1="16" x2="25" y1="34" y2="52"></line>
+      </svg>`,
+      girl: `<svg class="w-full h-full" fill="none" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" fill="#F43F5E" r="32"></circle>
+        <circle cx="17" cy="21" fill="#831843" r="6.5"></circle>
+        <circle cx="47" cy="21" fill="#831843" r="6.5"></circle>
+        <path d="M18 25C18 16 24 12 32 12C40 12 46 16 46 25V30H18V25Z" fill="#831843"></path>
+        <circle cx="32" cy="33" fill="#FED7AA" r="13"></circle>
+        <circle cx="27" cy="32" fill="#1F2937" r="2.2"></circle>
+        <circle cx="37" cy="32" fill="#1F2937" r="2.2"></circle>
+        <circle cx="23.5" cy="35" fill="#FDA4AF" opacity="0.85" r="2.5"></circle>
+        <circle cx="40.5" cy="35" fill="#FDA4AF" opacity="0.85" r="2.5"></circle>
+        <path d="M29 38Q32 41 35 38" fill="none" stroke="#E11D48" stroke-linecap="round" stroke-width="2"></path>
+        <path d="M15 62C15 50 22 42 32 42C42 42 49 50 49 62H15Z" fill="#BE185D"></path>
+        <circle cx="47" cy="46" fill="#FACC15" r="6.5" stroke="#B45309" stroke-width="1.2"></circle>
+        <text fill="#78350F" font-family="sans-serif" font-size="6.5" font-weight="bold" text-anchor="middle" x="47" y="49.5">9</text>
+        <line stroke="#F59E0B" stroke-linecap="round" stroke-width="2.5" x1="16" x2="25" y1="34" y2="52"></line>
+      </svg>`
+    };
+
+    // 附近球友数据层
+    const playersData = {
+      ajie: {
+        id: 'ajie',
+        name: '阿杰',
+        avatarText: '杰',
+        location: '嘉定紫藤园球场',
+        activeTime: '2小时前活跃',
+        style: '中式黑八',
+        tags: ['☕ 娱乐休闲/欢乐局', '🤝 台费AA'],
+        distance: '0.4km',
+        status: 'idle',
+        greetingSent: false,
+        greetingMessage: '',
+        greetingTime: '',
+        wxId: ''
+      },
+      xiaolin: {
+        id: 'xiaolin',
+        name: '小林',
+        avatarText: '林',
+        location: '安亭市民体育中心',
+        activeTime: '25分钟前活跃',
+        style: '中式九球',
+        tags: ['🔥 进阶玩家/有点准度', '🤝 台费AA'],
+        distance: '0.8km',
+        status: 'waiting',
+        greetingSent: true,
+        greetingMessage: 'Hello，我看你在附近，方便一起拼个台打几局吗？',
+        greetingTime: '15分钟前发送 · 剩余23小时',
+        wxId: ''
+      },
+      fengge: {
+        id: 'fengge',
+        name: '峰哥',
+        avatarText: '峰',
+        location: '远香湖球会',
+        activeTime: '10分钟前活跃',
+        style: '美式九球',
+        tags: ['🔥 进阶玩家/有点准度', '🤝 台费AA'],
+        distance: '1.2km',
+        status: 'accepted',
+        greetingSent: true,
+        greetingMessage: '你好！想找个有强度的球友练练实战，有兴趣约一场吗？',
+        greetingTime: '2小时前',
+        wxId: 'fengge_billiards'
+      },
+      chenjiaolian: {
+        id: 'chenjiaolian',
+        name: '陈教练',
+        avatarText: '陈',
+        location: '上海国际赛车场俱乐部',
+        activeTime: '刚刚活跃',
+        style: '斯诺克',
+        tags: ['🏆 准清台/球房常客', '🤝 输家买单'],
+        distance: '1.8km',
+        status: 'declined',
+        greetingSent: true,
+        greetingMessage: '陈教练你好，请问今天下午在球房吗？方便切磋切磋吗？',
+        greetingTime: '5小时前',
+        wxId: ''
+      },
+      laozhou: {
+        id: 'laozhou',
+        name: '老周',
+        avatarText: '周',
+        location: '嘉定体育馆桌球厅',
+        activeTime: '昨天活跃',
+        style: '中式黑八',
+        tags: ['☕ 娱乐休闲/欢乐局', '🤝 台费AA'],
+        distance: '2.3km',
+        status: 'idle',
+        greetingSent: false,
+        greetingMessage: '',
+        greetingTime: '',
+        wxId: ''
+      }
+    };
+
+    // ==================== 通用工具函数 ====================
+    window.showAppToast = function (msg, isError = false) {
+      const toast = document.getElementById('global-toast');
+      const text = document.getElementById('toast-text');
+      const icon = document.getElementById('toast-icon');
+      if (!toast || !text) return;
+      if (toastTimer) clearTimeout(toastTimer);
+      text.textContent = msg;
+      toast.className = isError
+        ? 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] bg-rose-600 text-white text-xs px-4 py-2.5 rounded-full shadow-xl pointer-events-none opacity-100 transition-opacity duration-300 flex items-center space-x-2 max-w-[85%] text-center'
+        : 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] bg-[#07C160] text-white text-xs px-4 py-2.5 rounded-full shadow-xl pointer-events-none opacity-100 transition-opacity duration-300 flex items-center space-x-2 max-w-[85%] text-center';
+      if (icon) icon.textContent = isError ? '✕' : '✓';
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+      }, 2000);
+    };
+
+    window.copyTextWithFallback = function (textToCopy) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy)
+          .then(() => window.showAppToast('微信号已复制到剪贴板，快去微信添加好友约球吧！'))
+          .catch(() => window.showAppToast(`微信号：${textToCopy}`));
+      } else {
+        window.showAppToast(`微信号：${textToCopy}`);
+      }
+    };
+
+    // ==================== 定位横幅与顶部位置选择逻辑 ====================
+    window.dismissLocationBanner = function () {
+      const banner = document.getElementById('location-banner');
+      if (!banner) return;
+      banner.style.opacity = '0';
+      banner.style.transform = 'translateY(-6px)';
+      setTimeout(() => banner.remove(), 220);
+    };
+
+    window.handleEnableLocation = function () {
+      window.showAppToast(`定位已开启：${confirmedLocationName}`);
+      window.dismissLocationBanner();
+    };
+
+    window.openLocationPicker = function () {
+      const picker = document.getElementById('location-picker-view');
+      if (!picker) return;
+      // 同步当前已确认位置到待选状态
+      const matched = poiListData.find(item => item.name === confirmedLocationName);
+      pendingSelectedPoiId = matched ? matched.id : 'poi-1';
+      pickerZoomLevel = 1;
+      pickerOffsetX = matched ? matched.offsetX : 0;
+      pickerOffsetY = matched ? matched.offsetY : 0;
+      updatePickerMapTransform();
+      renderPoiList(document.getElementById('poi-search-input')?.value || '');
+
+      picker.classList.remove('translate-x-full');
+      picker.classList.add('translate-x-0');
+    };
+
+    window.closeLocationPicker = function () {
+      const picker = document.getElementById('location-picker-view');
+      if (!picker) return;
+      picker.classList.remove('translate-x-0');
+      picker.classList.add('translate-x-full');
+    };
+
+    function updatePickerMapTransform() {
+      const canvas = document.getElementById('picker-map-canvas');
+      if (canvas) {
+        canvas.style.transform = `scale(${pickerZoomLevel}) translate(${pickerOffsetX}px, ${pickerOffsetY}px)`;
+      }
+    }
+
+    window.zoomPickerMap = function (delta) {
+      const nextZoom = Math.min(1.45, Math.max(0.85, Number((pickerZoomLevel + delta).toFixed(2))));
+      if (nextZoom === pickerZoomLevel) {
+        window.showAppToast(delta > 0 ? '已放大至最大比例' : '已缩小至最小比例');
+        return;
+      }
+      pickerZoomLevel = nextZoom;
+      updatePickerMapTransform();
+    };
+
+    window.resetPickerToCurrentLocation = function () {
+      const currentPoi = poiListData[0];
+      pendingSelectedPoiId = currentPoi.id;
+      pickerZoomLevel = 1;
+      pickerOffsetX = currentPoi.offsetX;
+      pickerOffsetY = currentPoi.offsetY;
+      updatePickerMapTransform();
+      const pinLabel = document.getElementById('picker-pin-label');
+      if (pinLabel) pinLabel.textContent = currentPoi.name;
+      clearPoiSearch();
+      window.showAppToast('已定位到当前位置');
+    };
+
+    window.selectPoiItem = function (poiId) {
+      const target = poiListData.find(p => p.id === poiId);
+      if (!target) return;
+      pendingSelectedPoiId = poiId;
+      pickerOffsetX = target.offsetX;
+      pickerOffsetY = target.offsetY;
+      updatePickerMapTransform();
+
+      const pinLabel = document.getElementById('picker-pin-label');
+      if (pinLabel) pinLabel.textContent = target.name;
+
+      renderPoiList(document.getElementById('poi-search-input')?.value || '');
+    };
+
+    window.filterPoiList = function (keyword) {
+      const clearBtn = document.getElementById('poi-search-clear');
+      if (clearBtn) {
+        if (keyword.trim().length > 0) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+      }
+      renderPoiList(keyword);
+    };
+
+    window.clearPoiSearch = function () {
+      const input = document.getElementById('poi-search-input');
+      const clearBtn = document.getElementById('poi-search-clear');
+      if (input) input.value = '';
+      if (clearBtn) clearBtn.classList.add('hidden');
+      renderPoiList('');
+    };
+
+    function renderPoiList(keyword = '') {
+      const container = document.getElementById('poi-list-container');
+      if (!container) return;
+      const kw = keyword.trim().toLowerCase();
+      const filtered = kw
+        ? poiListData.filter(item => item.name.toLowerCase().includes(kw) || item.address.toLowerCase().includes(kw))
+        : poiListData;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="py-12 flex flex-col items-center justify-center text-center text-slate-400 space-y-2">
+            <span class="text-2xl">📍</span>
+            <p class="text-xs font-medium">未找到与“${keyword}”相关的地点</p>
+            <button type="button" onclick="clearPoiSearch()" class="text-[11px] text-[#07C160] font-semibold underline cursor-pointer">查看附近全部地点</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const isSelected = item.id === pendingSelectedPoiId;
+        return `
+          <div class="py-3 flex items-start justify-between gap-3 cursor-pointer hover:bg-slate-50/80 rounded-xl px-1.5 -mx-1.5 transition-colors" onclick="selectPoiItem('${item.id}')">
+            <div class="flex items-start gap-2.5 min-w-0 flex-1">
+              <div class="w-8 h-8 rounded-full ${isSelected ? 'bg-emerald-100 text-[#006c49]' : 'bg-emerald-50 text-[#10b981]'} flex items-center justify-center shrink-0 mt-0.5">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"></path></svg>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5">
+                  <h2 class="text-[14px] ${isSelected ? 'font-bold text-[#131b2e]' : 'font-medium text-[#131b2e]'} truncate">${item.name}</h2>
+                  ${item.tag ? `<span class="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-emerald-50 text-[#006c49] border border-emerald-200/70 shrink-0">${item.tag}</span>` : ''}
+                </div>
+                <p class="text-[12px] ${isSelected ? 'text-[#3c4a42]' : 'text-[#6c7a71]'} truncate mt-0.5">${item.address}</p>
+              </div>
+            </div>
+            ${isSelected ? `
+              <div class="shrink-0 flex items-center pt-1.5">
+                <div class="w-5 h-5 rounded-full bg-[#10b981] flex items-center justify-center text-white shadow-sm">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.confirmSelectedLocation = function () {
+      const chosen = poiListData.find(p => p.id === pendingSelectedPoiId) || poiListData[0];
+      confirmedLocationName = chosen.name;
+
+      // 1. 同步更新主页面左上角位置胶囊文案
+      const headerLocText = document.getElementById('header-location-text');
+      if (headerLocText) headerLocText.textContent = chosen.name;
+
+      // 2. 更新地图“我在这”悬浮标签
+      const userPinLabel = document.getElementById('user-pin-label');
+      if (userPinLabel) userPinLabel.textContent = `我在这 · ${chosen.name}`;
+
+      // 3. 关闭顶部定位提示条并提示切换成功
+      window.dismissLocationBanner();
+      window.closeLocationPicker();
+      window.showAppToast(`已切换位置：${chosen.name}`);
+    };
+
+    // ==================== 地图模式球友卡片与状态联动 ====================
+    window.renderMapCard = function (playerId) {
+      const player = playersData[playerId];
+      if (!player) return;
+      currentTargetId = playerId;
+
+      // 高亮当前选中的地图 Pin
+      document.querySelectorAll('.map-player-pin').forEach(pin => {
+        if (pin.getAttribute('data-player-id') === playerId) {
+          pin.classList.add('bounce-pin');
+        } else {
+          pin.classList.remove('bounce-pin');
+        }
+      });
+
+      const card = document.getElementById('map-bottom-card');
+      const nameEl = document.getElementById('card-name');
+      const gameEl = document.getElementById('card-game');
+      const vtEl = document.getElementById('card-venue-time');
+      const avEl = document.getElementById('card-avatar');
+      const lTag = document.getElementById('card-level-tag');
+      const fTag = document.getElementById('card-fee-tag');
+
+      const banner = document.getElementById('card-sent-banner');
+      const bannerText = document.getElementById('card-sent-text');
+      const bannerTime = document.getElementById('card-sent-time');
+
+      const acceptedBanner = document.getElementById('card-accepted-banner');
+      const acceptedWx = document.getElementById('card-accepted-wx');
+      const declinedBanner = document.getElementById('card-declined-banner');
+
+      const greetBtn = document.getElementById('card-greet-btn');
+      const greetBtnText = document.getElementById('card-greet-btn-text');
+      const greetBtnIcon = document.getElementById('card-greet-btn-icon');
+
+      if (nameEl) nameEl.textContent = player.name;
+      if (gameEl) gameEl.textContent = player.style;
+      if (vtEl) vtEl.textContent = `${player.location} · ${player.activeTime}`;
+      if (avEl) avEl.textContent = player.avatarText;
+      if (lTag && player.tags[0]) lTag.textContent = player.tags[0];
+      if (fTag && player.tags[1]) fTag.textContent = player.tags[1];
+
+      if (banner) { banner.classList.add('hidden'); banner.classList.remove('flex'); }
+      if (acceptedBanner) { acceptedBanner.classList.add('hidden'); acceptedBanner.classList.remove('flex'); }
+      if (declinedBanner) { declinedBanner.classList.add('hidden'); declinedBanner.classList.remove('flex'); }
+
+      if (player.status === 'accepted') {
+        if (acceptedBanner) {
+          acceptedBanner.classList.remove('hidden');
+          acceptedBanner.classList.add('flex');
+          if (acceptedWx) acceptedWx.textContent = player.wxId || 'wx_billiards';
+        }
+        if (greetBtn) {
+          greetBtn.disabled = true;
+          greetBtn.className = 'w-full py-2.5 px-4 bg-emerald-100 text-emerald-800 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-default';
+        }
+        if (greetBtnText) greetBtnText.textContent = '✓ 对方已同意互换微信';
+        if (greetBtnIcon) greetBtnIcon.classList.add('hidden');
+      } else if (player.status === 'declined') {
+        if (declinedBanner) {
+          declinedBanner.classList.remove('hidden');
+          declinedBanner.classList.add('flex');
+        }
+        if (greetBtn) {
+          greetBtn.disabled = true;
+          greetBtn.className = 'w-full py-2.5 px-4 bg-slate-100 text-slate-400 font-medium text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-not-allowed';
+        }
+        if (greetBtnText) greetBtnText.textContent = '暂不方便';
+        if (greetBtnIcon) greetBtnIcon.classList.add('hidden');
+      } else if (player.greetingSent || player.status === 'waiting') {
+        if (banner && bannerText) {
+          bannerText.textContent = player.greetingMessage;
+          if (bannerTime) bannerTime.textContent = player.greetingTime || '刚刚发送 · 剩余24小时';
+          banner.classList.remove('hidden');
+          banner.classList.add('flex');
+        }
+        if (greetBtn) {
+          greetBtn.disabled = true;
+          greetBtn.className = 'w-full py-2.5 px-4 bg-slate-100 text-slate-400 font-medium text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-not-allowed';
+        }
+        if (greetBtnText) greetBtnText.textContent = '等待对方同意';
+        if (greetBtnIcon) greetBtnIcon.classList.add('hidden');
+      } else {
+        if (greetBtn) {
+          greetBtn.disabled = false;
+          greetBtn.className = 'w-full py-2.5 px-4 bg-[#07C160] hover:bg-[#06ad56] active:bg-[#059b4c] text-white text-xs font-medium rounded-xl shadow-md flex items-center justify-center gap-1.5 transition-all cursor-pointer';
+        }
+        if (greetBtnText) greetBtnText.textContent = '打招呼';
+        if (greetBtnIcon) greetBtnIcon.classList.remove('hidden');
+      }
+
+      if (card) {
+        card.classList.remove('translate-y-full', 'opacity-0', 'pointer-events-none');
+        card.classList.add('translate-y-0', 'opacity-100');
+      }
+    };
+
+    window.updateListCard = function (playerId) {
+      const player = playersData[playerId];
+      if (!player) return;
+
+      const listBtn = document.getElementById(`list-greet-btn-${playerId}`);
+      const listBanner = document.getElementById(`list-sent-banner-${playerId}`);
+      const listText = document.getElementById(`list-sent-text-${playerId}`);
+      const listTime = document.getElementById(`list-sent-time-${playerId}`);
+      const listExpired = document.getElementById(`list-expired-banner-${playerId}`);
+
+      if (player.greetingSent || player.status === 'waiting') {
+        if (listBtn) {
+          listBtn.disabled = true;
+          listBtn.textContent = '等待对方同意';
+          listBtn.className = 'px-3 py-1.5 bg-slate-100 text-slate-400 font-medium text-xs rounded-xl shrink-0 cursor-not-allowed';
+        }
+        if (listBanner && listText) {
+          listText.textContent = player.greetingMessage;
+          if (listTime) listTime.textContent = player.greetingTime || '刚刚发送 · 剩余24小时';
+          listBanner.classList.remove('hidden');
+          listBanner.classList.add('flex');
+        }
+        if (listExpired) listExpired.classList.add('hidden');
+      }
+    };
+
+    window.sendGreeting = function (playerId, messageText) {
+      const player = playersData[playerId];
+      if (!player) return;
+
+      player.greetingSent = true;
+      player.greetingMessage = messageText;
+      player.status = 'waiting';
+      player.greetingTime = '刚刚发送 · 剩余24小时';
+
+      window.closePhraseSheet();
+      window.showAppToast('打招呼已发送');
+      window.renderMapCard(playerId);
+      window.updateListCard(playerId);
+    };
+
+    window.sendGreetingOption = function (phrase) {
+      window.sendGreeting(currentTargetId, phrase);
+    };
+
+    window.selectPlayer = function (playerId) {
+      window.renderMapCard(playerId);
+    };
+
+    window.closeMapCard = function () {
+      const card = document.getElementById('map-bottom-card');
+      if (card) {
+        card.classList.remove('translate-y-0', 'opacity-100');
+        card.classList.add('translate-y-full', 'opacity-0', 'pointer-events-none');
+      }
+      document.querySelectorAll('.map-player-pin').forEach(pin => pin.classList.remove('bounce-pin'));
+    };
+
+    window.handleMapBackgroundClick = function (event) {
+      if (!event.target.closest('#map-bottom-card') && !event.target.closest('.map-player-pin')) {
+        window.closeMapCard();
+      }
+    };
+
+    window.handleCardGreet = function () {
+      window.openPhraseSheet(currentTargetId);
+    };
+
+    window.copyCardWx = function () {
+      const p = playersData[currentTargetId];
+      const wx = p ? (p.wxId || 'fengge_billiards') : 'fengge_billiards';
+      window.copyTextWithFallback(wx);
+    };
+
+    // ==================== 个人资料抽屉与弹窗逻辑 ====================
+    window.openProfileDrawer = function () {
+      const d = document.getElementById('profile-drawer');
+      if (d) {
+        d.classList.remove('translate-x-full');
+        d.classList.add('translate-x-0');
+      }
+    };
+
+    window.closeProfileDrawer = function () {
+      const d = document.getElementById('profile-drawer');
+      if (d) {
+        d.classList.remove('translate-x-0');
+        d.classList.add('translate-x-full');
+      }
+    };
+
+    window.handleDrawerAvatarClick = function () {
+      if (isLoggedIn) {
+        window.openAvatarSheet();
+      } else {
+        window.openPhoneAuthSheet();
+      }
+    };
+
+    window.openPhoneAuthSheet = function () {
+      const backdrop = document.getElementById('phone-auth-backdrop');
+      const sheet = document.getElementById('phone-auth-sheet');
+      if (!backdrop || !sheet) return;
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.classList.remove('opacity-0');
+        sheet.classList.remove('translate-y-full');
+        sheet.classList.add('translate-y-0');
+      });
+    };
+
+    window.closePhoneAuthSheet = function (callback) {
+      const backdrop = document.getElementById('phone-auth-backdrop');
+      const sheet = document.getElementById('phone-auth-sheet');
+      if (!backdrop || !sheet) return;
+      sheet.classList.remove('translate-y-0');
+      sheet.classList.add('translate-y-full');
+      backdrop.classList.add('opacity-0');
+      setTimeout(() => {
+        backdrop.classList.add('hidden');
+        if (typeof callback === 'function') callback();
+      }, 260);
+    };
+
+    window.handlePhoneAllow = function () {
+      window.closePhoneAuthSheet(() => {
+        setTimeout(() => {
+          window.openAvatarSheet();
+        }, 100);
+      });
+    };
+
+    window.openAvatarSheet = function () {
+      window.selectGenderAvatar(selectedGender);
+      const backdrop = document.getElementById('avatar-modal-backdrop');
+      const sheet = document.getElementById('avatar-modal-sheet');
+      if (!backdrop || !sheet) return;
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.classList.remove('opacity-0');
+        sheet.classList.remove('translate-y-full');
+        sheet.classList.add('translate-y-0');
+      });
+    };
+
+    window.closeAvatarSheet = function () {
+      const backdrop = document.getElementById('avatar-modal-backdrop');
+      const sheet = document.getElementById('avatar-modal-sheet');
+      if (!backdrop || !sheet) return;
+      sheet.classList.remove('translate-y-0');
+      sheet.classList.add('translate-y-full');
+      backdrop.classList.add('opacity-0');
+      setTimeout(() => backdrop.classList.add('hidden'), 260);
+    };
+
+    window.selectGenderAvatar = function (gender) {
+      selectedGender = gender;
+      const boyCard = document.getElementById('avatar-card-boy');
+      const girlCard = document.getElementById('avatar-card-girl');
+      const boyCheck = boyCard ? boyCard.querySelector('.avatar-check') : null;
+      const girlCheck = girlCard ? girlCard.querySelector('.avatar-check') : null;
+
+      if (gender === 'boy') {
+        if (boyCard) boyCard.className = 'avatar-card selected relative p-4 rounded-3xl border-2 border-[#07C160] bg-emerald-50/70 flex flex-col items-center justify-center cursor-pointer transition-all active:scale-95 shadow-sm';
+        if (girlCard) girlCard.className = 'avatar-card relative p-4 rounded-3xl border-2 border-slate-200 bg-slate-50 flex flex-col items-center justify-center cursor-pointer transition-all active:scale-95 shadow-xs';
+        if (boyCheck) { boyCheck.classList.remove('hidden'); boyCheck.classList.add('flex'); }
+        if (girlCheck) { girlCheck.classList.remove('flex'); girlCheck.classList.add('hidden'); }
+      } else {
+        if (girlCard) girlCard.className = 'avatar-card selected relative p-4 rounded-3xl border-2 border-[#07C160] bg-emerald-50/70 flex flex-col items-center justify-center cursor-pointer transition-all active:scale-95 shadow-sm';
+        if (boyCard) boyCard.className = 'avatar-card relative p-4 rounded-3xl border-2 border-slate-200 bg-slate-50 flex flex-col items-center justify-center cursor-pointer transition-all active:scale-95 shadow-xs';
+        if (girlCheck) { girlCheck.classList.remove('hidden'); girlCheck.classList.add('flex'); }
+        if (boyCheck) { boyCheck.classList.remove('flex'); boyCheck.classList.add('hidden'); }
+      }
+    };
+
+    window.handleConfirmAvatar = function () {
+      isLoggedIn = true;
+      window.closeAvatarSheet();
+      const avatarSvg = cartoonAvatars[selectedGender];
+
+      const drawerAvatarContainer = document.getElementById('my-profile-avatar-container');
+      const drawerDot = document.getElementById('drawer-avatar-dot');
+      const nick = document.getElementById('user-nickname-text');
+      const badge = document.getElementById('sync-status-badge');
+
+      if (drawerAvatarContainer) drawerAvatarContainer.innerHTML = avatarSvg;
+      if (drawerDot) {
+        drawerDot.classList.remove('bg-slate-300');
+        drawerDot.classList.add('bg-[#07C160]');
+      }
+      if (nick) {
+        nick.textContent = selectedGender === 'boy' ? '冷酷准神' : '元气台球妹';
+        nick.className = 'text-sm font-bold text-slate-900';
+      }
+      if (badge) {
+        badge.textContent = '已登录';
+        badge.className = 'px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-100 text-emerald-800';
+      }
+
+      const navContainer = document.getElementById('nav-avatar-container');
+      const navDot = document.getElementById('nav-avatar-dot');
+      if (navContainer) navContainer.innerHTML = avatarSvg;
+      if (navDot) {
+        navDot.classList.remove('bg-slate-300');
+        navDot.classList.add('bg-[#07C160]');
+      }
+
+      const mapMyContainer = document.getElementById('map-my-avatar-container');
+      if (mapMyContainer) mapMyContainer.innerHTML = avatarSvg;
+
+      window.showAppToast('头像设置成功！');
+    };
+
+    // 实力段位 Sheet（修复：同步更新选中态样式与勾选标记）
+    window.openLevelSheet = function () {
+      const backdrop = document.getElementById('level-modal-backdrop');
+      const sheet = document.getElementById('level-sheet');
+      if (!backdrop || !sheet) return;
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.classList.remove('opacity-0');
+        sheet.classList.remove('translate-y-full');
+        sheet.classList.add('translate-y-0');
+      });
+    };
+
+    window.closeLevelSheet = function () {
+      const backdrop = document.getElementById('level-modal-backdrop');
+      const sheet = document.getElementById('level-sheet');
+      if (!backdrop || !sheet) return;
+      sheet.classList.remove('translate-y-0');
+      sheet.classList.add('translate-y-full');
+      backdrop.classList.add('opacity-0');
+      setTimeout(() => backdrop.classList.add('hidden'), 260);
+    };
+
+    window.chooseLevel = function (lvl, sub) {
+      const main = document.getElementById('current-level-text');
+      const subEl = document.getElementById('level-sub-display');
+      if (main) main.textContent = lvl;
+      if (subEl) subEl.textContent = sub;
+
+      document.querySelectorAll('.level-option-item').forEach(item => {
+        const isCurrent = item.getAttribute('data-level') === lvl;
+        const title = item.querySelector('.level-title');
+        const desc = item.querySelector('.level-desc');
+        const check = item.querySelector('.level-check');
+
+        if (isCurrent) {
+          item.className = 'level-option-item p-3 rounded-2xl border border-[#07C160] bg-emerald-50 cursor-pointer flex items-center justify-between transition-all';
+          if (title) title.className = 'level-title text-xs font-bold text-[#07C160]';
+          if (desc) desc.className = 'level-desc text-[11px] text-emerald-800 mt-0.5';
+          if (check) check.classList.remove('hidden');
+        } else {
+          item.className = 'level-option-item p-3 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-emerald-50 hover:border-[#07C160] cursor-pointer flex items-center justify-between transition-all';
+          if (title) title.className = 'level-title text-xs font-bold text-slate-900';
+          if (desc) desc.className = 'level-desc text-[11px] text-slate-500 mt-0.5';
+          if (check) check.classList.add('hidden');
+        }
+      });
+
+      window.closeLevelSheet();
+      window.showAppToast(`实力段位已更新: ${lvl}`);
+    };
+
+    // 台费分摊 Sheet（修复：同步更新选中态样式与勾选标记）
+    window.openSplitSheet = function () {
+      const backdrop = document.getElementById('split-modal-backdrop');
+      const sheet = document.getElementById('split-sheet');
+      if (!backdrop || !sheet) return;
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.classList.remove('opacity-0');
+        sheet.classList.remove('translate-y-full');
+        sheet.classList.add('translate-y-0');
+      });
+    };
+
+    window.closeSplitSheet = function () {
+      const backdrop = document.getElementById('split-modal-backdrop');
+      const sheet = document.getElementById('split-sheet');
+      if (!backdrop || !sheet) return;
+      sheet.classList.remove('translate-y-0');
+      sheet.classList.add('translate-y-full');
+      backdrop.classList.add('opacity-0');
+      setTimeout(() => backdrop.classList.add('hidden'), 260);
+    };
+
+    window.chooseSplit = function (fee, desc) {
+      const main = document.getElementById('current-fee-text');
+      const sub = document.getElementById('fee-sub-display');
+      if (main) main.textContent = fee;
+      if (sub) sub.textContent = desc;
+
+      document.querySelectorAll('.split-option-item').forEach(item => {
+        const isCurrent = item.getAttribute('data-split') === fee;
+        const title = item.querySelector('.split-title');
+        const descEl = item.querySelector('.split-desc');
+        const check = item.querySelector('.split-check');
+
+        if (isCurrent) {
+          item.className = 'split-option-item p-3 rounded-2xl border border-[#07C160] bg-emerald-50 cursor-pointer flex items-center justify-between transition-all';
+          if (title) title.className = 'split-title text-xs font-bold text-[#07C160]';
+          if (descEl) descEl.className = 'split-desc text-[11px] text-emerald-800 mt-0.5';
+          if (check) check.classList.remove('hidden');
+        } else {
+          item.className = 'split-option-item p-3 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-emerald-50 hover:border-[#07C160] cursor-pointer flex items-center justify-between transition-all';
+          if (title) title.className = 'split-title text-xs font-bold text-slate-900';
+          if (descEl) descEl.className = 'split-desc text-[11px] text-slate-500 mt-0.5';
+          if (check) check.classList.add('hidden');
+        }
+      });
+
+      window.closeSplitSheet();
+      window.showAppToast(`台费规则已更新: ${fee}`);
+    };
+
+    // 打招呼 Sheet 开关
+    window.openPhraseSheet = function (playerIdOrName) {
+      if (playersData[playerIdOrName]) {
+        currentTargetId = playerIdOrName;
+      } else {
+        const foundId = Object.keys(playersData).find(k => playersData[k].name === playerIdOrName);
+        if (foundId) currentTargetId = foundId;
+      }
+
+      const p = playersData[currentTargetId];
+      const nameEl = document.getElementById('target-player-name-phrase');
+      if (nameEl && p) nameEl.textContent = p.name;
+
+      const backdrop = document.getElementById('phrase-modal-backdrop');
+      const sheet = document.getElementById('phrase-sheet');
+      if (!backdrop || !sheet) return;
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.classList.remove('opacity-0');
+        sheet.classList.remove('translate-y-full');
+        sheet.classList.add('translate-y-0');
+      });
+    };
+
+    window.closePhraseSheet = function () {
+      const backdrop = document.getElementById('phrase-modal-backdrop');
+      const sheet = document.getElementById('phrase-sheet');
+      if (!backdrop || !sheet) return;
+      sheet.classList.remove('translate-y-0');
+      sheet.classList.add('translate-y-full');
+      backdrop.classList.add('opacity-0');
+      setTimeout(() => backdrop.classList.add('hidden'), 260);
+    };
+
+    // 模式切换
+    window.switchTab = function (mode) {
+      const pill = document.getElementById('tab-pill');
+      const btnMap = document.getElementById('tab-btn-map');
+      const btnList = document.getElementById('tab-btn-list');
+      const viewMap = document.getElementById('view-map');
+      const viewList = document.getElementById('view-list');
+
+      if (mode === 'map') {
+        if (pill) pill.style.transform = 'translateX(0px)';
+        if (btnMap) btnMap.className = 'relative z-10 w-1/2 py-1 text-xs font-bold text-[#07C160] transition-colors flex items-center justify-center space-x-1 cursor-pointer';
+        if (btnList) btnList.className = 'relative z-10 w-1/2 py-1 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors flex items-center justify-center space-x-1 cursor-pointer';
+        if (viewMap) viewMap.classList.remove('hidden');
+        if (viewList) viewList.classList.add('hidden');
+      } else {
+        if (pill) pill.style.transform = 'translateX(100%)';
+        if (btnList) btnList.className = 'relative z-10 w-1/2 py-1 text-xs font-bold text-[#07C160] transition-colors flex items-center justify-center space-x-1 cursor-pointer';
+        if (btnMap) btnMap.className = 'relative z-10 w-1/2 py-1 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors flex items-center justify-center space-x-1 cursor-pointer';
+        if (viewList) viewList.classList.remove('hidden');
+        if (viewMap) viewMap.classList.add('hidden');
+      }
+    };
+
+    // 常玩项目多选（修复：至少保留 1 项保护）
+    window.toggleGameChip = function (el) {
+      const isSelected = el.classList.contains('selected');
+      const check = el.querySelector('.chip-check');
+
+      if (isSelected) {
+        const currentSelectedCount = document.querySelectorAll('.game-chip.selected').length;
+        if (currentSelectedCount <= 1) {
+          window.showAppToast('至少保留1个常玩项目', true);
+          return;
+        }
+        el.classList.remove('selected');
+        el.className = 'game-chip py-2 px-1 text-center text-xs font-medium rounded-xl border bg-slate-50 text-slate-600 border-slate-200 flex items-center justify-center space-x-1 cursor-pointer transition-all';
+        if (check) check.classList.add('hidden');
+      } else {
+        el.classList.add('selected');
+        el.className = 'game-chip selected py-2 px-1 text-center text-xs font-medium rounded-xl border bg-emerald-50 text-emerald-800 border-emerald-400 shadow-xs flex items-center justify-center space-x-1 cursor-pointer transition-all';
+        if (check) check.classList.remove('hidden');
+      }
+
+      const cnt = document.querySelectorAll('.game-chip.selected').length;
+      const countEl = document.getElementById('games-count');
+      if (countEl) countEl.textContent = cnt;
+    };
+
+    // 隐身模式（修复：同步 aria-checked 与地图定位锚点状态）
+    window.toggleStealth = function () {
+      stealthActive = !stealthActive;
+      const toggle = document.getElementById('stealth-toggle');
+      const thumb = document.getElementById('stealth-thumb');
+      const userMapPin = document.getElementById('user-map-pin');
+      const userPinLabel = document.getElementById('user-pin-label');
+
+      if (toggle) toggle.setAttribute('aria-checked', String(stealthActive));
+
+      if (stealthActive) {
+        if (toggle) toggle.className = 'w-11 h-6 bg-[#07C160] rounded-full transition-colors relative flex items-center p-0.5 cursor-pointer';
+        if (thumb) thumb.className = 'w-5 h-5 bg-white rounded-full shadow-md transform transition-transform translate-x-5';
+        if (userMapPin) userMapPin.classList.add('opacity-50');
+        if (userPinLabel) userPinLabel.textContent = '已隐身';
+        window.showAppToast('地图隐身模式已开启');
+      } else {
+        if (toggle) toggle.className = 'w-11 h-6 bg-slate-200 rounded-full transition-colors relative flex items-center p-0.5 cursor-pointer';
+        if (thumb) thumb.className = 'w-5 h-5 bg-white rounded-full shadow-md transform transition-transform translate-x-0';
+        if (userMapPin) userMapPin.classList.remove('opacity-50');
+        if (userPinLabel) userPinLabel.textContent = `我在这 · ${confirmedLocationName}`;
+        window.showAppToast('地图隐身模式已关闭');
+      }
+    };
+
+    // 页面初始化
+    window.addEventListener('DOMContentLoaded', () => {
+      renderPoiList('');
+    });
+  </script>
+</body>
+</html>

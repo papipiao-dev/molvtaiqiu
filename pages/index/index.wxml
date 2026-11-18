@@ -1,0 +1,266 @@
+<!--pages/index/index.wxml 附近球友页面-->
+<view class="page-container">
+
+  <!-- ==================== 顶部 Header（自定义导航栏） ==================== -->
+  <view class="header" style="padding-top: {{statusBarHeight}}px;">
+    <view class="header-top" style="height: {{navBarHeight}}px;">
+      <!-- 左侧占位块，宽度与右侧胶囊区域相同，使标题水平居中 -->
+      <view class="header-placeholder" style="width: {{capsuleAreaWidth}}px;"></view>
+
+      <text class="header-title">首页</text>
+
+      <!-- 右侧占位块（与微信原生胶囊位置对应，不手写胶囊图标） -->
+      <view class="header-placeholder" style="width: {{capsuleAreaWidth}}px;"></view>
+    </view>
+  </view>
+
+  <!-- ==================== 模式切换与个人资料入口 ==================== -->
+  <view class="mode-bar">
+    <!-- 切换器居中 -->
+    <view class="tab-switcher">
+      <view class="tab-pill {{currentMode === 'map' ? 'tab-pill-map' : 'tab-pill-list'}}"></view>
+      <view class="tab-btn {{currentMode === 'map' ? 'tab-active' : ''}}" bindtap="onSwitchMap">
+        <text class="tab-icon">🗺</text>
+        <text>地图模式</text>
+      </view>
+      <view class="tab-btn {{currentMode === 'list' ? 'tab-active' : ''}}" bindtap="onSwitchList">
+        <text class="tab-icon">☰</text>
+        <text>列表模式</text>
+      </view>
+    </view>
+
+    <!-- 右上角个人资料入口：绝对定位固定在右侧 -->
+    <view class="profile-entry" bindtap="onProfileTap">
+      <view class="profile-avatar-wrap">
+        <view class="profile-avatar-default" wx:if="{{!isLoggedIn}}">
+          <text class="avatar-placeholder">👤</text>
+        </view>
+        <view class="profile-avatar-img" wx:else>
+          <text>{{avatarText}}</text>
+        </view>
+      </view>
+      <view class="profile-dot {{isLoggedIn ? 'dot-online' : ''}}"></view>
+    </view>
+  </view>
+
+  <!-- ==================== 定位提示条 ==================== -->
+  <view class="location-banner" wx:if="{{showLocationBanner}}">
+    <view class="banner-left">
+      <text class="banner-icon">ⓘ</text>
+      <text class="banner-text">授权位置信息，发现身边球房的球友</text>
+    </view>
+    <view class="banner-right">
+      <view class="banner-link" bindtap="onEnableLocation">
+        <text>去授权</text>
+        <text class="banner-arrow">›</text>
+      </view>
+      <view class="banner-divider"></view>
+      <text class="banner-close" bindtap="onDismissBanner">✕</text>
+    </view>
+  </view>
+
+  <!-- ==================== 视图1：地图模式 ==================== -->
+  <view class="map-view" wx:if="{{currentMode === 'map'}}">
+    <!-- 当前位置入口：地图左上角悬浮毛玻璃胶囊 -->
+    <view class="map-location-capsule" bindtap="onLocationTap">
+      <text class="map-loc-icon">📍</text>
+      <text class="map-loc-text text-ellipsis">{{locationName}}</text>
+      <text class="map-loc-arrow">›</text>
+    </view>
+
+    <!-- 原生地图组件 -->
+    <map
+      id="nearbyMap"
+      class="map-component"
+      longitude="{{mapCenterLng}}"
+      latitude="{{mapCenterLat}}"
+      scale="{{mapScale}}"
+      markers="{{mapMarkers}}"
+      bindmarkertap="onMarkerTap"
+      bindtap="onMapBackgroundTap"
+    ></map>
+
+    <!-- 地图底部球友名片 -->
+    <view class="map-bottom-card {{selectedPlayerId ? 'card-show' : 'card-hide'}}">
+      <view class="card-inner" wx:if="{{selectedPlayer}}">
+        <!-- 卡片头部 -->
+        <view class="card-header">
+          <view class="card-user-info">
+            <view class="card-avatar-wrap">
+              <view class="card-avatar" style="background:{{selectedPlayer.avatarColor}}">
+                <text>{{selectedPlayer.avatarText}}</text>
+              </view>
+              <view class="avatar-online-dot"></view>
+            </view>
+            <view class="card-user-detail">
+              <view class="card-name-row">
+                <text class="card-name">{{selectedPlayer.name}}</text>
+                <text class="card-style-tag">{{selectedPlayer.style}}</text>
+              </view>
+              <view class="card-location-row">
+                <text class="card-location-icon">📍</text>
+                <text class="card-location-text">{{selectedPlayer.location}} · {{selectedPlayer.activeTime}}</text>
+              </view>
+              <view class="card-tags-row">
+                <text class="card-tag level-tag" wx:if="{{selectedPlayer.tags[0]}}">{{selectedPlayer.tags[0]}}</text>
+                <text class="card-tag fee-tag" wx:if="{{selectedPlayer.tags[1]}}">{{selectedPlayer.tags[1]}}</text>
+              </view>
+            </view>
+          </view>
+          <view class="card-close-btn" bindtap="onCloseMapCard">✕</view>
+        </view>
+
+        <!-- 等待响应横幅 -->
+        <view class="card-sent-banner" wx:if="{{selectedPlayer.status === 'waiting' || (selectedPlayer.greetingSent && selectedPlayer.status !== 'accepted' && selectedPlayer.status !== 'declined')}}">
+          <text class="sent-icon">💬</text>
+          <view class="sent-content">
+            <view class="sent-header">
+              <text class="sent-status">等待对方响应中</text>
+              <text class="sent-time">{{selectedPlayer.greetingTime || '刚刚发送 · 剩余24小时'}}</text>
+            </view>
+            <text class="sent-text">{{selectedPlayer.greetingMessage}}</text>
+          </view>
+        </view>
+
+        <!-- 对方已同意横幅 -->
+        <view class="card-accepted-banner" wx:if="{{selectedPlayer.status === 'accepted'}}">
+          <view class="accepted-left">
+            <view class="accepted-icon-wrap">
+              <text class="accepted-icon">💬</text>
+            </view>
+            <view class="accepted-detail">
+              <text class="accepted-label">对方微信号</text>
+              <text class="accepted-wx">{{selectedPlayer.wxId}}</text>
+            </view>
+          </view>
+          <view class="accepted-copy-btn" bindtap="onCopyWx" data-wx="{{selectedPlayer.wxId}}">一键复制</view>
+        </view>
+
+        <!-- 对方婉拒横幅 -->
+        <view class="card-declined-banner" wx:if="{{selectedPlayer.status === 'declined'}}">
+          <text class="declined-icon">🚫</text>
+          <text class="declined-text">对方暂不方便约球 · 24小时后可重新打招呼</text>
+        </view>
+
+        <!-- 打招呼按钮 -->
+        <view class="card-action">
+          <view
+            class="greet-btn {{selectedPlayer.status === 'idle' ? 'greet-btn-active' : 'greet-btn-disabled'}}"
+            bindtap="{{selectedPlayer.status === 'idle' ? 'onOpenPhraseSheet' : ''}}"
+          >
+            <text wx:if="{{selectedPlayer.status === 'idle'}}">打招呼</text>
+            <text wx:elif="{{selectedPlayer.status === 'waiting'}}">等待对方同意</text>
+            <text wx:elif="{{selectedPlayer.status === 'accepted'}}">✓ 对方已同意互换微信</text>
+            <text wx:elif="{{selectedPlayer.status === 'declined'}}">暂不方便</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 视图2：列表模式 ==================== -->
+  <scroll-view class="list-view" scroll-y wx:if="{{currentMode === 'list'}}">
+    <!-- 提示条 -->
+    <view class="list-tip">
+      <text class="tip-icon">💡</text>
+      <text class="tip-text">打招呼发起约局，对方同意后即可互换微信号快速组局</text>
+    </view>
+
+    <!-- 球友卡片列表 -->
+    <view class="player-card" wx:for="{{playerList}}" wx:key="id">
+      <!-- 卡片头部 -->
+      <view class="player-card-header">
+        <view class="player-info">
+          <view class="player-avatar-wrap">
+            <view class="player-avatar" style="background:{{item.avatarColor}}">
+              <text>{{item.avatarText}}</text>
+            </view>
+            <view class="player-online-dot {{item.status === 'declined' ? '' : 'dot-active'}}"></view>
+          </view>
+          <view class="player-detail">
+            <view class="player-name-row">
+              <text class="player-name">{{item.name}}</text>
+              <text class="player-style-tag {{item.styleClass}}">{{item.style}}</text>
+            </view>
+            <text class="player-location">{{item.location}} · {{item.activeTime}}</text>
+          </view>
+        </view>
+
+        <!-- 状态按钮 -->
+        <view class="player-status-btn" wx:if="{{item.status === 'idle'}}" bindtap="onOpenPhraseSheet" data-id="{{item.id}}">打招呼</view>
+        <view class="player-status-btn waiting-btn" wx:elif="{{item.status === 'waiting'}}">等待对方同意</view>
+        <view class="player-status-btn accepted-btn" wx:elif="{{item.status === 'accepted'}}">
+          <text>✓</text>
+          <text>对方已同意</text>
+        </view>
+        <view class="player-status-btn declined-btn" wx:elif="{{item.status === 'declined'}}">暂不方便</view>
+      </view>
+
+      <!-- 标签行 -->
+      <view class="player-tags">
+        <text class="player-tag level-tag" wx:if="{{item.tags[0]}}">{{item.tags[0]}}</text>
+        <text class="player-tag fee-tag" wx:if="{{item.tags[1]}}">{{item.tags[1]}}</text>
+      </view>
+
+      <!-- 等待响应横幅 -->
+      <view class="player-sent-banner" wx:if="{{item.status === 'waiting' || (item.greetingSent && item.status !== 'accepted' && item.status !== 'declined')}}">
+        <text class="sent-icon">💬</text>
+        <view class="sent-content">
+          <view class="sent-header">
+            <text class="sent-status">等待对方响应中</text>
+            <text class="sent-time">{{item.greetingTime || '刚刚发送 · 剩余24小时'}}</text>
+          </view>
+          <text class="sent-text">{{item.greetingMessage}}</text>
+        </view>
+      </view>
+
+      <!-- 对方已同意横幅 -->
+      <view class="player-wx-banner" wx:if="{{item.status === 'accepted'}}">
+        <view class="wx-left">
+          <view class="wx-icon-wrap">
+            <text class="wx-icon">💬</text>
+          </view>
+          <view class="wx-detail">
+            <text class="wx-label">对方微信号</text>
+            <text class="wx-id">{{item.wxId}}</text>
+          </view>
+        </view>
+        <view class="wx-copy-btn" bindtap="onCopyWx" data-wx="{{item.wxId}}">一键复制</view>
+      </view>
+
+      <!-- 对方婉拒横幅 -->
+      <view class="player-declined-banner" wx:if="{{item.status === 'declined'}}">
+        <text class="declined-icon">🚫</text>
+        <text class="declined-text">对方暂不方便约球 · 24小时后可重新打招呼</text>
+      </view>
+
+      <!-- 超时过期横幅 -->
+      <view class="player-expired-banner" wx:if="{{item.status === 'expired'}}">
+        <text class="expired-icon">⏰</text>
+        <text class="expired-text">对方超过24小时未响应，系统已自动重置为初始状态，可再次发起邀约</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- ==================== 打招呼短语选择弹窗 ==================== -->
+  <view class="modal-mask {{showPhraseSheet ? 'modal-show' : ''}}" bindtap="onClosePhraseSheet">
+    <view class="modal-sheet phrase-sheet {{showPhraseSheet ? 'sheet-up' : 'sheet-down'}}" catchtap>
+      <view class="sheet-handle"></view>
+      <view class="sheet-header">
+        <view class="sheet-title-wrap">
+          <text class="sheet-title">选择打招呼短语</text>
+          <text class="sheet-subtitle">向球友 <text class="target-name">{{targetPlayerName}}</text> 发起邀约</text>
+        </view>
+        <view class="sheet-close" bindtap="onClosePhraseSheet">✕</view>
+      </view>
+
+      <view class="phrase-list">
+        <view class="phrase-item" wx:for="{{phraseOptions}}" wx:key="index" bindtap="onSendGreeting" data-phrase="{{item}}">
+          <text class="phrase-emoji">{{item.emoji}}</text>
+          <text class="phrase-text">{{item.text}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+</view>

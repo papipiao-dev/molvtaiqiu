@@ -1,0 +1,194 @@
+<!--pages/profile/profile.wxml 个人资料页面-->
+<view class="profile-container">
+
+  <!-- ==================== 个人信息卡片 ==================== -->
+  <view class="info-card">
+    <view class="avatar-section" bindtap="onAvatarTap">
+      <view class="avatar-wrap">
+        <view class="avatar-default" wx:if="{{!isLoggedIn}}">
+          <text class="avatar-icon">👤</text>
+        </view>
+        <view class="avatar-selected" wx:else style="background:{{avatarBgColor}}">
+          <text>{{avatarText}}</text>
+        </view>
+      </view>
+      <view class="avatar-dot {{isLoggedIn ? 'dot-online' : ''}}"></view>
+    </view>
+    <view class="nickname-row">
+      <text class="nickname {{isLoggedIn ? 'nickname-active' : ''}}">{{nickname}}</text>
+      <text class="status-badge {{isLoggedIn ? 'badge-active' : ''}}">{{loginStatus}}</text>
+    </view>
+  </view>
+
+  <!-- ==================== 台球档案卡片 ==================== -->
+  <view class="archive-card">
+    <view class="card-section-title">台球档案</view>
+
+    <!-- 1. 常玩项目（多选） -->
+    <view class="archive-item">
+      <view class="item-header">
+        <text class="item-label">常玩项目（多选）</text>
+        <text class="item-count">已选 <text class="count-num">{{selectedGames.length}}</text> 项</text>
+      </view>
+      <view class="games-grid">
+        <view
+          class="game-chip {{item.selected ? 'chip-selected' : ''}}"
+          wx:for="{{gameOptions}}"
+          wx:key="name"
+          bindtap="onToggleGame"
+          data-name="{{item.name}}"
+        >
+          <text class="chip-check" wx:if="{{item.selected}}">✓</text>
+          <text>{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 2. 实力段位（单选） -->
+    <view class="archive-item archive-divider">
+      <view class="item-row" bindtap="onOpenLevelSheet">
+        <view class="item-left">
+          <text class="item-label">实力段位（单选）</text>
+          <text class="item-sub">{{levelSubText}}</text>
+        </view>
+        <view class="item-right">
+          <text class="item-value-tag">{{currentLevel}}</text>
+          <text class="item-arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 3. 台费分摊规则 -->
+    <view class="archive-item archive-divider">
+      <view class="item-row" bindtap="onOpenSplitSheet">
+        <view class="item-left">
+          <text class="item-label">台费分摊规则</text>
+          <text class="item-sub">{{splitSubText}}</text>
+        </view>
+        <view class="item-right">
+          <text class="item-value-tag">{{currentSplit}}</text>
+          <text class="item-arrow">›</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 隐私偏好卡片 ==================== -->
+  <view class="privacy-card">
+    <view class="card-section-title">隐私偏好</view>
+
+    <view class="privacy-item">
+      <view class="privacy-left">
+        <text class="privacy-label">地图隐身模式</text>
+        <text class="privacy-desc">开启后，雷达中对附近球友隐藏位置与状态</text>
+      </view>
+      <view class="switch-wrap {{stealthMode ? 'switch-on' : ''}}" bindtap="onToggleStealth">
+        <view class="switch-thumb {{stealthMode ? 'thumb-on' : ''}}"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 头像选择弹窗 ==================== -->
+  <view class="modal-mask {{showAvatarSheet ? 'modal-show' : ''}}" bindtap="onCloseAvatarSheet">
+    <view class="modal-sheet avatar-sheet {{showAvatarSheet ? 'sheet-up' : 'sheet-down'}}" catchtap>
+      <view class="sheet-handle"></view>
+      <view class="sheet-header">
+        <view class="sheet-title-wrap">
+          <text class="sheet-title">选择球友专属卡通头像</text>
+          <text class="sheet-subtitle">个性台球形象，助你闪耀球局</text>
+        </view>
+        <view class="sheet-close" bindtap="onCloseAvatarSheet">✕</view>
+      </view>
+
+      <view class="avatar-grid">
+        <!-- 男生头像 -->
+        <view class="avatar-option {{selectedGender === 'boy' ? 'avatar-option-selected' : ''}}" bindtap="onSelectGender" data-gender="boy">
+          <view class="avatar-preview avatar-boy">
+            <text class="avatar-emoji">🧑‍🎨</text>
+          </view>
+          <view class="avatar-check-mark" wx:if="{{selectedGender === 'boy'}}">
+            <text>✓</text>
+          </view>
+        </view>
+        <!-- 女生头像 -->
+        <view class="avatar-option {{selectedGender === 'girl' ? 'avatar-option-selected' : ''}}" bindtap="onSelectGender" data-gender="girl">
+          <view class="avatar-preview avatar-girl">
+            <text class="avatar-emoji">👩‍🎨</text>
+          </view>
+          <view class="avatar-check-mark" wx:if="{{selectedGender === 'girl'}}">
+            <text>✓</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="avatar-confirm-btn" bindtap="onConfirmAvatar">确定使用该头像</view>
+    </view>
+  </view>
+
+  <!-- ==================== 实力段位弹窗 ==================== -->
+  <view class="modal-mask {{showLevelSheet ? 'modal-show' : ''}}" bindtap="onCloseLevelSheet">
+    <view class="modal-sheet level-sheet {{showLevelSheet ? 'sheet-up' : 'sheet-down'}}" catchtap>
+      <view class="sheet-handle"></view>
+      <view class="sheet-header">
+        <view class="sheet-title-wrap">
+          <text class="sheet-title">选择实力段位</text>
+          <text class="sheet-subtitle">根据实际水平选择，便于匹配合适球友</text>
+        </view>
+        <view class="sheet-close" bindtap="onCloseLevelSheet">✕</view>
+      </view>
+
+      <scroll-view class="option-list" scroll-y>
+        <view
+          class="option-item {{item.name === currentLevel ? 'option-selected' : ''}}"
+          wx:for="{{levelOptions}}"
+          wx:key="name"
+          bindtap="onChooseLevel"
+          data-name="{{item.name}}"
+          data-sub="{{item.sub}}"
+        >
+          <view class="option-left">
+            <text class="option-title {{item.name === currentLevel ? 'option-title-active' : ''}}">{{item.name}}</text>
+            <text class="option-desc {{item.name === currentLevel ? 'option-desc-active' : ''}}">{{item.sub}}</text>
+          </view>
+          <text class="option-check {{item.name === currentLevel ? 'check-show' : ''}}">✓</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- ==================== 台费分摊规则弹窗 ==================== -->
+  <view class="modal-mask {{showSplitSheet ? 'modal-show' : ''}}" bindtap="onCloseSplitSheet">
+    <view class="modal-sheet split-sheet {{showSplitSheet ? 'sheet-up' : 'sheet-down'}}" catchtap>
+      <view class="sheet-handle"></view>
+      <view class="sheet-header">
+        <view class="sheet-title-wrap">
+          <text class="sheet-title">台费分摊规则</text>
+          <text class="sheet-subtitle">约定组局球费承担规则，避免结账尴尬</text>
+        </view>
+        <view class="sheet-close" bindtap="onCloseSplitSheet">✕</view>
+      </view>
+
+      <scroll-view class="option-list" scroll-y>
+        <view
+          class="option-item {{item.name === currentSplit ? 'option-selected' : ''}}"
+          wx:for="{{splitOptions}}"
+          wx:key="name"
+          bindtap="onChooseSplit"
+          data-name="{{item.name}}"
+          data-sub="{{item.sub}}"
+          data-emoji="{{item.emoji}}"
+        >
+          <view class="option-left-split">
+            <text class="option-emoji">{{item.emoji}}</text>
+            <view class="option-text-wrap">
+              <text class="option-title {{item.name === currentSplit ? 'option-title-active' : ''}}">{{item.name}}</text>
+              <text class="option-desc {{item.name === currentSplit ? 'option-desc-active' : ''}}">{{item.sub}}</text>
+            </view>
+          </view>
+          <text class="option-check {{item.name === currentSplit ? 'check-show' : ''}}">✓</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+</view>

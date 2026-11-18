@@ -1,0 +1,26 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/location-picker/index",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarTitleText": "找球友",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F8FAFC",
+    "backgroundTextStyle": "dark"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于展示附近球房球友及地图精确定位"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
+  "__usePrivacyCheck__": true,
+  "lazyCodeLoading": "requiredComponents",
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

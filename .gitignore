@@ -1,0 +1,10 @@
+# macOS 系统隐藏文件
+.DS_Store
+**/.DS_Store
+
+# 微信开发者工具本地私有配置（防止跨设备调试路径冲突）
+project.private.config.json
+
+# 依赖与日志
+node_modules/
+*.log
